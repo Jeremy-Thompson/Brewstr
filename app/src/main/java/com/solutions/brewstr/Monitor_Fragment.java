@@ -27,7 +27,4 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
         //YOUR CODE HERE
         monitorButton.setText("CLICK WORKED!");
     }
-
-
-
 }

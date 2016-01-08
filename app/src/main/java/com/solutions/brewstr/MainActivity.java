@@ -1,6 +1,7 @@
 package com.solutions.brewstr;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.*;
 import android.content.Intent;
@@ -30,6 +31,7 @@ public class MainActivity extends ActionBarActivity
     Setup_Fragment setup_frag = new Setup_Fragment();
     Monitor_Fragment monitor_frag = new Monitor_Fragment();
     Bluetooth bluetooth;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -81,22 +83,22 @@ public class MainActivity extends ActionBarActivity
         switch(position)
         {
             case 0:
-                objFragment = start_frag;
+                   objFragment = start_frag;
                 break;
             case 1:
-                objFragment = setup_frag;
+                    objFragment = setup_frag;
                 break;
             case 2:
-                objFragment = monitor_frag;
+                    objFragment = monitor_frag;
                 break;
             default:
                 PlaceholderFragment.newInstance(position + 1);
         }
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, objFragment)
                 .commit();
+
     }
 
     public void onSectionAttached(int number) {

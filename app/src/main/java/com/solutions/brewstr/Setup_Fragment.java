@@ -25,6 +25,7 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         //YOUR CODE HERE
-        setupButton.setText("CLICK WORKED!");
+        String tmp = "CLICK WORKED";
+        setupButton.setText(tmp);
     }
 }
