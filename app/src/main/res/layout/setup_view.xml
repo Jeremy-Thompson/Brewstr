@@ -3,24 +3,214 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Welcome to the setup view."
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SETUP"
-        android:id="@+id/setupButton"
-        android:layout_gravity="center_horizontal" />
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="left|bottom">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_gravity="center_horizontal" />
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/Mashing_Row1">
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:text="Mashing Temperature"
+                android:id="@+id/mashingTempLabel"
+                android:enabled="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="35dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="top">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mashingTempSetpoint"
+                    android:layout_gravity="center_horizontal"
+                    android:text="99"
+                    android:paddingTop="15dp"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mashingTempSeekBar" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/Mashing_Row2" >
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:text="Mashing Time"
+                android:id="@+id/mashingTimeLabel"
+                android:enabled="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="35dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="top" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mashingTimeSetpoint"
+                    android:layout_gravity="center_horizontal"
+                    android:text="99"
+                    android:paddingTop="15dp"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/mashingTimeSeekBar"
+                    android:layout_gravity="top" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/Boiling_Row1" >
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:text="Boiling Temperature"
+                android:id="@+id/boilTempLabel"
+                android:enabled="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="35dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="top" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/boilTempSetpoint"
+                    android:layout_gravity="center_horizontal"
+                    android:text="99"
+                    android:paddingTop="15dp"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/boilTempSeekBar"
+                    android:layout_gravity="top" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/Boiling_Row2" >
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:text="Boiling Time"
+                android:id="@+id/boilTimeLabel"
+                android:enabled="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="35dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="top" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/boilTimeSetpoint"
+                    android:layout_gravity="center_horizontal"
+                    android:text="99"
+                    android:paddingTop="15dp"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/boilTimeSeekBar"
+                    android:layout_gravity="top" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/Hops_Row" >
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:text="Hops Timer"
+                android:id="@+id/hopsTime"
+                android:enabled="true"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20dp"
+                android:paddingTop="35dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="top" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hopsTimeSetpoint"
+                    android:layout_gravity="center_horizontal"
+                    android:text="99"
+                    android:paddingTop="15dp"
+                    android:textSize="15dp" />
+
+                <SeekBar
+                    android:layout_width="175dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/hopsTimeSeekBar"
+                    android:layout_gravity="top" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Brew!"
+                android:id="@+id/setupButton"
+                android:layout_column="1" />
+        </TableRow>
+
+    </TableLayout>
 
 </LinearLayout>
