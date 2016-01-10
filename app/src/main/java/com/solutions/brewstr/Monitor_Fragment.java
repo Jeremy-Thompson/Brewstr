@@ -3,6 +3,7 @@ package com.solutions.brewstr;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
     ProgressBar boilingProgressBar;
     ProgressBar fermentationProgressBar;
     int count = 0;
+    MashingProgressFragment mashProgFrag = new MashingProgressFragment();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,6 +35,11 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
         boilingProgressBar.setProgress(0);
 
         fermentationProgressBar = (ProgressBar) rootview.findViewById(R.id.fermentation);
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.step_progress_container, mashProgFrag)
+                .commit();
         return rootview;
     }
     @Override

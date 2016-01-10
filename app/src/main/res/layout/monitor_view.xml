@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="20dp"
-        android:layout_gravity="center">
+        android:layout_centerHorizontal="true"
+        android:id="@+id/stage_progress_bar">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -48,7 +50,14 @@
                 android:background="@color/white"/>
     </GridLayout>
 
-
+    <!-- As the main content view, the view below consumes the entire
+     space available using match_parent in both dimensions. -->
+    <FrameLayout android:id="@+id/step_progress_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/stage_progress_bar"
+        android:layout_above="@+id/textView"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -56,13 +65,15 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Welcome to the monitor view."
         android:id="@+id/textView"
-        android:layout_gravity="center_horizontal" />
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/monitorButton"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MONITOR"
         android:id="@+id/monitorButton"
-        android:layout_gravity="center_horizontal" />
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
-</LinearLayout>
+</RelativeLayout>
