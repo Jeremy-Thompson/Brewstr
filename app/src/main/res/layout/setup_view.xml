@@ -14,38 +14,39 @@
             android:id="@+id/Mashing_Row1">
 
             <TextView
-                android:layout_width="200dp"
+                android:layout_width="195dp"
                 android:layout_height="100dp"
-                android:text="Mashing Temperature"
+                android:text="Mash Temperature"
                 android:id="@+id/mashingTempLabel"
                 android:enabled="true"
-                android:layout_gravity="center_horizontal"
                 android:textSize="20dp"
-                android:paddingTop="35dp" />
+                android:paddingTop="35dp"
+                android:layout_gravity="left"
+                android:paddingLeft="10dp" />
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_gravity="top">
+                android:layout_gravity="top|left">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/mashingTempSetpoint"
                     android:layout_gravity="center_horizontal"
-                    android:text="99"
+                    android:text="--"
                     android:paddingTop="15dp"
                     android:textSize="15dp" />
 
-                <SeekBar
-                    android:layout_width="175dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/mashingTempSeekBar" />
+    <SeekBar
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/mashingTempSeekBar" />
 
-            </LinearLayout>
+</LinearLayout>
 
-        </TableRow>
+    </TableRow>
 
         <TableRow
             android:layout_width="fill_parent"
@@ -53,14 +54,15 @@
             android:id="@+id/Mashing_Row2" >
 
             <TextView
-                android:layout_width="200dp"
+                android:layout_width="175dp"
                 android:layout_height="100dp"
                 android:text="Mashing Time"
                 android:id="@+id/mashingTimeLabel"
                 android:enabled="true"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left|center_horizontal"
                 android:textSize="20dp"
-                android:paddingTop="35dp" />
+                android:paddingTop="35dp"
+                android:paddingLeft="10dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -73,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/mashingTimeSetpoint"
                     android:layout_gravity="center_horizontal"
-                    android:text="99"
+                    android:text="--"
                     android:paddingTop="15dp"
                     android:textSize="15dp" />
 
@@ -91,14 +93,15 @@
             android:id="@+id/Boiling_Row1" >
 
             <TextView
-                android:layout_width="200dp"
+                android:layout_width="175dp"
                 android:layout_height="100dp"
                 android:text="Boiling Temperature"
                 android:id="@+id/boilTempLabel"
                 android:enabled="true"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left|center_horizontal"
                 android:textSize="20dp"
-                android:paddingTop="35dp" />
+                android:paddingTop="35dp"
+                android:paddingLeft="10dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -111,7 +114,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/boilTempSetpoint"
                     android:layout_gravity="center_horizontal"
-                    android:text="99"
+                    android:text="--"
                     android:paddingTop="15dp"
                     android:textSize="15dp" />
 
@@ -129,14 +132,15 @@
             android:id="@+id/Boiling_Row2" >
 
             <TextView
-                android:layout_width="200dp"
+                android:layout_width="175dp"
                 android:layout_height="100dp"
                 android:text="Boiling Time"
                 android:id="@+id/boilTimeLabel"
                 android:enabled="true"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left|center_horizontal"
                 android:textSize="20dp"
-                android:paddingTop="35dp" />
+                android:paddingTop="35dp"
+                android:paddingLeft="10dp" />
 
             <LinearLayout
                 android:orientation="vertical"
@@ -149,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/boilTimeSetpoint"
                     android:layout_gravity="center_horizontal"
-                    android:text="99"
+                    android:text="--"
                     android:paddingTop="15dp"
                     android:textSize="15dp" />
 
@@ -167,27 +171,30 @@
             android:id="@+id/Hops_Row" >
 
             <TextView
-                android:layout_width="200dp"
+                android:layout_width="195dp"
                 android:layout_height="100dp"
                 android:text="Hops Timer"
                 android:id="@+id/hopsTime"
                 android:enabled="true"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="left|center_horizontal"
                 android:textSize="20dp"
-                android:paddingTop="35dp" />
+                android:paddingTop="35dp"
+                android:layout_weight="1"
+                android:paddingLeft="10dp" />
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_gravity="top" >
+                android:layout_gravity="top"
+                android:layout_weight="1">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/hopsTimeSetpoint"
                     android:layout_gravity="center_horizontal"
-                    android:text="99"
+                    android:text="--"
                     android:paddingTop="15dp"
                     android:textSize="15dp" />
 
@@ -204,11 +211,12 @@
             android:layout_height="fill_parent">
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Start Brew!"
                 android:id="@+id/setupButton"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:background="#bf524b3d" />
         </TableRow>
 
     </TableLayout>
