@@ -49,7 +49,7 @@ public class Bluetooth extends Thread {
     private static final char DELIMITER = '\n';
 
     // UUID that specifies a protocol for generic bluetooth serial communication
-    private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final UUID uuid = UUID.fromString("00001105-0000-1000-8000-00805F9B34FB");
 
     // MAC address of remote Bluetooth device
     private final String address;
@@ -110,14 +110,13 @@ public class Bluetooth extends Thread {
         BluetoothDevice remoteDevice = adapter.getRemoteDevice(address);
 
         // Create a socket with the remote device using this protocol
-        socket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
-
+        //socket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+        socket =(BluetoothSocket) remoteDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(remoteDevice,1);
         // Make sure Bluetooth adapter is not in discovery mode
         adapter.cancelDiscovery();
 
         // Connect to the socket
         socket.connect();
-
 
         // Get input and output streams from the socket
         outStream = socket.getOutputStream();
@@ -232,6 +231,7 @@ public class Bluetooth extends Thread {
 
         // Attempt to connect and exit the thread if it failed
         try {
+            Thread.sleep(5000);
             connect();
             sendToReadHandler("CONNECTED");
         } catch (Exception e) {
@@ -243,13 +243,22 @@ public class Bluetooth extends Thread {
 
         // Loop continuously, reading data, until thread.interrupt() is called
         while (!this.isInterrupted()) {
-
+            sendToReadHandler(".");
+            try
+            {
+                Thread.sleep(5000);
+            }catch(Exception ex)
+            {
+             //derp?
+            }
             // Make sure things haven't gone wrong
             if ((inStream == null) || (outStream == null)) {
                 Log.e(TAG, "Lost bluetooth connection!");
                 break;
             }
-
+            // send some test data out
+            String test = "Test Message"; m
+            write(test);
             // Read data and add it to the buffer
             String s = read();
             if (s.length() > 0)

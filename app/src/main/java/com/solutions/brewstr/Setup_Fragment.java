@@ -65,7 +65,7 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
     }
     @Override
     public void onClick(View v) {
-        //YOUR CODE HERE
+        //Grab the input params, generate message for send to LL.
         String messageToLL = "";
         messageToLL += (75 + mashTempSB.getProgress());
         messageToLL += ",";
@@ -73,6 +73,18 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
         messageToLL += ",";
         messageToLL += boilTimeSB.getProgress();
         setupButton.setText(messageToLL);
+
+        Bluetooth bt = ((MainActivity)getActivity()).getBluetooth();
+        if(bt != null)
+        {
+           //We have bluetooth object - send message to LL
+            bt.getWriteHandler();
+        }
+        else
+        {
+            //display error message - bluetooth not connected/activated
+        }
+
     }
     private class seekBarListener implements SeekBar.OnSeekBarChangeListener {
 
@@ -105,11 +117,6 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
                 default:
                     break;
             }
-
-
-
-            Log.i("DEBUG", "Progress is: " + progress);
-            //set textView's text
         }
 
     public void onStartTrackingTouch(SeekBar seekBar) {}
