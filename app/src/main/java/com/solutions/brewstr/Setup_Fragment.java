@@ -29,8 +29,6 @@ public class Setup_Fragment extends Fragment  {
     TextView boilTimeSP;
     TextView hopsTimeSP;
 
-
-
     Button setupButton;
 
     @Override
