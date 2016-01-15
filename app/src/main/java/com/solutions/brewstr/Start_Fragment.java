@@ -24,7 +24,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
     View rootview;
     Button startButton;
     TextView logBox;
-    Bluetooth bluetooth;
+    Bluetooth bt;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.start_view, container, false);
@@ -38,7 +38,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         //Retrieve the main activity to grab the bluetooth obj for starting connection process
         MainActivity activity = (MainActivity) getActivity();
-        bluetooth = activity.getBluetooth();
+
         logBox.append("Attempting to connect to bluetooth...\n");
         try {
             int REQUEST_ENABLE_BT = 1234;
@@ -68,7 +68,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                         logBox.append(i + ") " + device.getName() + " - " + device.getAddress() + "\n\n");
                         if (device.getName().equals("HC-06")) {
                             //We know this is the right device, grab the mac address and try to connect.
-                            Bluetooth bt = new Bluetooth(device.getAddress(), new Handler() {
+                            bt = new Bluetooth(device.getAddress(), new Handler() {
                                 @Override
                                 public void handleMessage(Message message) {
 
@@ -87,9 +87,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                     }
                                 }
                             });
-                            Handler writeHandler = bt.getWriteHandler();
                             bt.start();
-                            sendMessage(writeHandler);
                         }
                     }
                 }
@@ -98,19 +96,12 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
         } catch (Exception ex) {
             logBox.append("Exception Caught: " + ex.getMessage());
         }
-        if (bluetooth != null) {
-            if (true)//add the bluetooth connection)
-            {
-                //successfull connection - call bluetooth thread.
-            }
-        } else {
-            //unable to connect to bluetooth, don't let the user pass this page.
-        }
     }
-    private void sendMessage(Handler handler)
+    public void sendMsgToBT(String s)
     {
+        Handler writeHandler = bt.getWriteHandler();
         Message msg = new Message();
-        msg.obj = "test message";
-        handler.sendMessage(msg);
+        msg.obj = s;
+        writeHandler.sendMessage(msg);
     }
 }

@@ -14,7 +14,7 @@ import android.widget.TextView;
 /**
  * Created by jeremy on 2016-01-08.
  */
-public class Setup_Fragment extends Fragment implements View.OnClickListener {
+public class Setup_Fragment extends Fragment  {
     View rootview;
 
     SeekBar mashTempSB;
@@ -39,7 +39,21 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
 
         //set button mapping and listeners
         setupButton = (Button) rootview.findViewById(R.id.setupButton);
-        setupButton.setOnClickListener(this);
+        setupButton.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View v) {
+                                               //Grab the input params, generate message for send to LL.
+                                               String messageToLL = "";
+                                               messageToLL += (75 + mashTempSB.getProgress());
+                                               messageToLL += ",";
+                                               messageToLL += (50 + mashTimeSB.getProgress());
+                                               messageToLL += ",";
+                                               messageToLL += boilTimeSB.getProgress();
+
+                                               ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
+
+                                           }
+                                       });
 
         //set seekbar mapping and listeners
         mashTempSB = (SeekBar) rootview.findViewById(R.id.mashingTempSeekBar);
@@ -62,29 +76,6 @@ public class Setup_Fragment extends Fragment implements View.OnClickListener {
         boilTimeSP = (TextView) rootview.findViewById(R.id.boilTimeSetpoint);
         hopsTimeSP = (TextView) rootview.findViewById(R.id.hopsTimeSetpoint);
         return rootview;
-    }
-    @Override
-    public void onClick(View v) {
-        //Grab the input params, generate message for send to LL.
-        String messageToLL = "";
-        messageToLL += (75 + mashTempSB.getProgress());
-        messageToLL += ",";
-        messageToLL += (50 + mashTimeSB.getProgress());
-        messageToLL += ",";
-        messageToLL += boilTimeSB.getProgress();
-        setupButton.setText(messageToLL);
-
-        Bluetooth bt = ((MainActivity)getActivity()).getBluetooth();
-        if(bt != null)
-        {
-           //We have bluetooth object - send message to LL
-            bt.getWriteHandler();
-        }
-        else
-        {
-            //display error message - bluetooth not connected/activated
-        }
-
     }
     private class seekBarListener implements SeekBar.OnSeekBarChangeListener {
 
