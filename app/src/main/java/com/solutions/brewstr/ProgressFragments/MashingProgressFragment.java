@@ -1,4 +1,4 @@
-package com.solutions.brewstr;
+package com.solutions.brewstr.ProgressFragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.solutions.brewstr.R;
 
 /**
  * Created by Derek on 2016-01-09.

@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.solutions.brewstr.ProgressFragments.MashingProgressFragment;
+
 /**
  * Created by jeremy on 2016-01-08.
  */
@@ -24,7 +26,7 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        rootview = inflater.inflate(R.layout.monitor_view,container,false);
+        rootview = inflater.inflate(R.layout.monitor_view, container, false);
         monitorButton = (Button) rootview.findViewById(R.id.monitorButton);
         monitorButton.setOnClickListener(this);
         mashingProgressBar = (ProgressBar) rootview.findViewById(R.id.mashing);
