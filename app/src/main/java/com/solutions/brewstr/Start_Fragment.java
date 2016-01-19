@@ -23,14 +23,13 @@ import java.util.Set;
 public class Start_Fragment extends Fragment implements View.OnClickListener {
     View rootview;
     Button startButton;
-    TextView logBox;
     Bluetooth bt;
+    boolean connected = false;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.start_view, container, false);
         startButton = (Button) rootview.findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
-        logBox = (TextView) rootview.findViewById(R.id.textView2);
         return rootview;
     }
 
@@ -38,34 +37,33 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         //Retrieve the main activity to grab the bluetooth obj for starting connection process
         MainActivity activity = (MainActivity) getActivity();
+        Log.i("DEBUG","Attempting to connect to bluetooth...\n");
 
-        logBox.append("Attempting to connect to bluetooth...\n");
         try {
-            int REQUEST_ENABLE_BT = 1234;
+            int REQUEST_ENABLE_BT = 1234; //sample enable code.
             BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
             if (mBluetoothAdapter == null) {
                 // Device does not support Bluetooth
-                logBox.append("No Bluetooth Support...\n");
+                Log.i("DEBUG","No Bluetooth Support...\n");
             } else {
                 if (!mBluetoothAdapter.isEnabled()) {
-                    logBox.append("Requesting Bluetooth Enable From User...\n");
+                    Log.i("DEBUG","Requesting Bluetooth Enable From User\n");
+
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    logBox.append("Bluetooth enabled.\n");
 
+                    Log.i("DEBUG","Bluetooth enabled.\n");
                 }
+                Log.i("DEBUG","Searching for paired devices!\n\n");
 
-                logBox.append("Searching for paired devices!\n\n");
                 Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-                int i = 0;
                 // If there are paired devices
                 if (pairedDevices.size() > 0) {
                     // Loop through paired devices
                     for (BluetoothDevice device : pairedDevices) {
                         // Add the name and address to an array adapter to show in a ListView
-                        i++;
-
-                        logBox.append(i + ") " + device.getName() + " - " + device.getAddress() + "\n\n");
+                        Log.i("DEBUG","Paired Device: " + ") " + device.getName() + " - " + device.getAddress() + "\n\n");
                         if (device.getName().equals("HC-06")) {
                             //We know this is the right device, grab the mac address and try to connect.
                             bt = new Bluetooth(device.getAddress(), new Handler() {
@@ -75,15 +73,16 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                     String s = (String) message.obj;
 
                                     if (s.equals("CONNECTED")) {
-                                        logBox.append("Connection Status Recieved: " + s + "\n\n");
+                                        Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
+                                        connected = true;
                                     } else if (s.equals("DISCONNECTED")) {
-                                        logBox.append("Connection Status Recieved: " + s + "\n\n");
+                                        Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
+                                        connected = false;
                                     } else if (s.equals("CONNECTION FAILED")) {
-                                        logBox.append("Connection Status Recieved: " + s + "\n\n");
-                                    } else if (s.equals(".")){
-                                        logBox.append("Thread Alive :)\n\n");
+                                        Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
+                                        connected = false;
                                     } else {
-                                        logBox.append("Message Recieved: " + s + "\n\n");
+                                        Log.i("DEBUG","Message Recieved: " + s + "\n\n");
                                     }
                                 }
                             });
@@ -92,9 +91,8 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                     }
                 }
             }
-
         } catch (Exception ex) {
-            logBox.append("Exception Caught: " + ex.getMessage());
+            Log.i("DEBUG","Exception Caught: " + ex.getMessage());
         }
     }
     public void sendMsgToBT(String s)

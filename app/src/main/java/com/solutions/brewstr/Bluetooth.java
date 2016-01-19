@@ -243,7 +243,6 @@ public class Bluetooth extends Thread {
 
         // Loop continuously, reading data, until thread.interrupt() is called
         while (!this.isInterrupted()) {
-            sendToReadHandler(".");
             try
             {
                 Thread.sleep(5000);

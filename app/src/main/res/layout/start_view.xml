@@ -14,11 +14,4 @@
         android:background="@drawable/start_btn"
         android:text="" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="sdsfdsf"
-        android:id="@+id/textView2"
-        android:layout_gravity="center" />
-
 </LinearLayout>
