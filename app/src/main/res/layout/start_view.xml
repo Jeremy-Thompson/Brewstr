@@ -2,7 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_weight="0.07"
+        android:layout_gravity="top">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect To Brewstr"
+            android:id="@+id/startLabel"
+            android:layout_gravity="center"
+            android:textSize="25dp"
+            android:backgroundTintMode="src_over"
+            android:backgroundTint="@color/abc_primary_text_material_dark" />
+    </FrameLayout>
 
     <Button
         android:id="@+id/startButton"

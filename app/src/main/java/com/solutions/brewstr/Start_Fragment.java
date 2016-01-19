@@ -25,11 +25,13 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
     Button startButton;
     Bluetooth bt;
     boolean connected = false;
+    TextView status;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.start_view, container, false);
         startButton = (Button) rootview.findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
+        status = (TextView) rootview.findViewById(R.id.startLabel);
         return rootview;
     }
 
@@ -75,12 +77,15 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                     if (s.equals("CONNECTED")) {
                                         Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
                                         connected = true;
+                                        status.setText("Connected.");
                                     } else if (s.equals("DISCONNECTED")) {
                                         Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
                                         connected = false;
+                                        status.setText("Disconnected.");
                                     } else if (s.equals("CONNECTION FAILED")) {
                                         Log.i("DEBUG","Connection Status Recieved: " + s + "\n\n");
                                         connected = false;
+                                        status.setText("Connection Failed.");
                                     } else {
                                         Log.i("DEBUG","Message Recieved: " + s + "\n\n");
                                     }
