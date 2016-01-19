@@ -19,6 +19,9 @@ public class MashingProgressFragment extends android.support.v4.app.Fragment {
     TextView mashTemp;
     TextView gristAmount;
     TextView timeRemaining;
+    String mBatchName = "";
+    Bundle bundle = new Bundle();
+
 
     int temp = 170;
     int amount = 100;
@@ -29,11 +32,16 @@ public class MashingProgressFragment extends android.support.v4.app.Fragment {
         mashTemp = (TextView) rootview.findViewById(R.id.mashing_temp);
         gristAmount = (TextView) rootview.findViewById(R.id.grist_amount);
         timeRemaining = (TextView) rootview.findViewById(R.id.time_remaining);
+        initializeParameters();
 
-
-        mashTemp.setText("Mashing Temperature:  " + temp + "" + " degrees Celsius");
+        mashTemp.setText(mBatchName + temp + "" + " degrees Celsius");
         gristAmount.setText("Grist Amount:  " + amount + "" + " grams");
         timeRemaining.setText("Time Remaining:  " + time + "" + " seconds");
         return rootview;
+    }
+
+    public void initializeParameters() {
+        bundle = getArguments();
+        mBatchName = bundle.getString("batch");
     }
 }

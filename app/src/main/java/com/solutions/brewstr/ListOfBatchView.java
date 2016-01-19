@@ -1,6 +1,7 @@
 package com.solutions.brewstr;
 
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Derek on 2016-01-12.
+ * Main list view that displays all the brews with their name, stage and a beer icon
  */
 public class ListOfBatchView extends android.support.v4.app.Fragment {
     View rootview;
@@ -33,21 +34,27 @@ public class ListOfBatchView extends android.support.v4.app.Fragment {
         lv = ( ListView ) rootview.findViewById( R.id.list );  // List defined in XML ( See Below )
 
         // Create Custom Adapter
-        adapter = new BatchListAdapter(getActivity(), CustomListViewValuesArr, res );
+        adapter = new BatchListAdapter((MainActivity)getActivity(), CustomListViewValuesArr, res );
         lv.setAdapter( adapter );
 
         return rootview;
     }
 
+    /**
+     * Retrieve the batch list information
+     * @param res Needed to get the drawables
+     */
     public void setListData(Resources res)
     {
-        for (int i = 0; i < 11; i++) {
+        Drawable beerGlassIcon = res.getDrawable(R.mipmap.beer_glass);
+        CustomListViewValuesArr.clear();
+        for (int i = 0; i < 5; i++) {
 
             final BatchDataHolder data = new BatchDataHolder();
 
             data.setBatchName("Batch " + i);
             data.setStage("Stage " + i);
-            data.setImage(res.getDrawable(R.mipmap.beer_glass));
+            data.setImage(beerGlassIcon);
 
             CustomListViewValuesArr.add(data);
         }

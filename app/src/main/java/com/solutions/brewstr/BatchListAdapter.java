@@ -17,14 +17,15 @@ import java.util.ArrayList;
 
 public class BatchListAdapter extends BaseAdapter implements View.OnClickListener {
 
-    private Activity activity;
+    private MainActivity activity;
     private ArrayList data;
     private static LayoutInflater inflater=null;
     public Resources res;
     BatchDataHolder tempValues=null;
+    Monitor_Fragment monitor_frag = new Monitor_Fragment();
 
     /*************  CustomAdapter Constructor *****************/
-    public BatchListAdapter(Activity a, ArrayList d,Resources resLocal) {
+    public BatchListAdapter(MainActivity a, ArrayList d,Resources resLocal) {
 
         activity = a;
         data=d;
@@ -126,15 +127,11 @@ public class BatchListAdapter extends BaseAdapter implements View.OnClickListene
 
         @Override
         public void onClick(View arg0) {
+            // Set batch name of the list item that was selected
+            tempValues = (BatchDataHolder) data.get(mPosition);
+            monitor_frag.setBatch(tempValues.getBatchName());
 
-
-/*
-            CustomListViewAndroidExample sct = (CustomListViewAndroidExample)activity;
-
-            // Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below
-
-            sct.onItemClick(mPosition);
-*/
-        }
+            activity.fragmentReplace(monitor_frag);
+}
     }
 }

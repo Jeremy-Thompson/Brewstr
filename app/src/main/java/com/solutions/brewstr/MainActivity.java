@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.*;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -94,11 +95,14 @@ public class MainActivity extends ActionBarActivity
             default:
                 PlaceholderFragment.newInstance(position + 1);
         }
+        fragmentReplace(objFragment);
+    }
+
+    public void fragmentReplace(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, objFragment)
+                .replace(R.id.container, fragment)
                 .commit();
-
     }
 
     public void onSectionAttached(int number) {
