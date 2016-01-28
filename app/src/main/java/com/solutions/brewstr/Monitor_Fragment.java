@@ -1,5 +1,7 @@
 package com.solutions.brewstr;
 
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,16 +34,25 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.monitor_view, container, false);
+
+        Resources res = getResources();
+        Drawable mashingDrawable = res.getDrawable(R.drawable.mashing_progress_drawable);
         monitorButton = (Button) rootview.findViewById(R.id.monitorButton);
         monitorButton.setOnClickListener(this);
         mMashingProgressBar = (ProgressBar) rootview.findViewById(R.id.mashing);
         mMashingProgressBar.setMax(100);
         mMashingProgressBar.setProgress(0);
+        mMashingProgressBar.setProgressDrawable(mashingDrawable);
 
+        Drawable boilingDrawable = res.getDrawable(R.drawable.boiling_progress_drawable);
         mBoilingProgressBar = (ProgressBar) rootview.findViewById(R.id.boiling);
         mBoilingProgressBar.setProgress(0);
+        mBoilingProgressBar.setProgressDrawable(boilingDrawable);
 
         mFermentationProgressBar = (ProgressBar) rootview.findViewById(R.id.fermentation);
+        Drawable fermentationDrawable = res.getDrawable(R.drawable.fermentation_progress_drawable);
+        mFermentationProgressBar.setProgress(0);
+        mFermentationProgressBar.setProgressDrawable(fermentationDrawable);
 
         FragmentManager fragmentManager = getChildFragmentManager();
         Bundle args = new Bundle();
@@ -58,7 +69,8 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
         //YOUR CODE HERE
         monitorButton.setText("CLICK WORKED!");
         count++;
-        mMashingProgressBar.setProgress(Math.round(count*100/3));
+        mMashingProgressBar.setProgress(Math.round(count*100/3) - 10);
+        mMashingProgressBar.setSecondaryProgress(Math.round(count*100/3));
 
         final int totalProgressTime = 100;
         final Thread t = new Thread() {
@@ -70,7 +82,8 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
                     try {
                         sleep(200);
                         jumpTime += 5;
-                        mBoilingProgressBar.setProgress(jumpTime);
+                        mBoilingProgressBar.setProgress(jumpTime - 10);
+                        mBoilingProgressBar.setSecondaryProgress(jumpTime);
                     }
                     catch (InterruptedException e) {
                         // TODO Auto-generated catch block
