@@ -4,24 +4,26 @@
 // variables to store brew configuration/setpoints
 int mash_temp_sp;
 int mash_time_sp;
-int boiler_temp_sp;
+int boiler_temp_sp = 60;
 int boiler_time_sp;
 int hops_time_sp;
 
 // variables to store sensor/system states
-int boiler_temp_fb;
-int boiler_temp_fb_memory; //stores previous boiler temp value
+float boiler_temp_fb;
+float boiler_temp_fb_memory; //stores previous boiler temp value
 
-int ledpin = 12; // LED connected to pin 48 (on-board LED)
+int ledpin = 3; // LED connected to pin 48 (on-board LED)
+
+boolean start_cfg_recvd = 0;
 
 // Defining the scheduling interval for each function
-#define readMessageFromUL_Cycle 10000U
-#define readTemp_Cycle 2500U
-#define controlTemp_Cycle 1250U
+#define readMessageFromUL_Cycle 2500U
+#define readTemp_Cycle 100U
+#define controlTemp_Cycle 100U
 #define taskCycle 100000U
 
-// Define the temperature sensor data pin = 2
-#define ONE_WIRE_BUS 2
+// Define the temperature sensor data pin = 10
+#define ONE_WIRE_BUS 10
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
@@ -31,9 +33,6 @@ unsigned long readTemp_LastMillis = 0;
 unsigned long controlTemp_LastMillis = 0;
 unsigned long taskLastMillis = 0;
 
-// DS18S20 Temperature chip i/o
-OneWire ds(10);  // on pin 10
-
 void setup()
 {
   Serial.begin(9600); //set baud rate for bluetooth serial input port
@@ -42,6 +41,7 @@ void setup()
 
   //testing setup
   pinMode(13, OUTPUT);
+  pinMode(3, OUTPUT);
 }
 
 //----------------------------------------------
@@ -55,11 +55,11 @@ void loop()
     Serial.println("readPacket: ");
     readMessageFromUL();
   }
-  if(taskScheduler(&readTemp_LastMillis, readTemp_Cycle)) // if readtemp is currently scheduled to be called
+  if(taskScheduler(&readTemp_LastMillis, readTemp_Cycle) && start_cfg_recvd) // if readtemp is currently scheduled to be called
   {
       readTemp();
   }
-  if(taskScheduler(&controlTemp_LastMillis, controlTemp_Cycle))    // task schedule template, add new tasks here and update names
+  if(taskScheduler(&controlTemp_LastMillis, controlTemp_Cycle) && start_cfg_recvd)    // task schedule template, add new tasks here and update names
   {
     //run task 
     controlTemp();
@@ -147,6 +147,8 @@ void decodeMessage(String message)
               boiler_temp_sp = Boiltemp.toInt();
               boiler_time_sp = Boiltime.toInt();
               hops_time_sp = Hopstime.toInt(); 
+
+              start_cfg_recvd = true;
               
               Serial.print("Mash Temp Setpoint: ");
               Serial.println(mash_temp_sp);
@@ -178,6 +180,9 @@ void readTemp()
    boiler_temp_fb_memory = boiler_temp_fb;
    sensors.requestTemperatures(); // Send the command to get temperatures
    boiler_temp_fb = sensors.getTempCByIndex(0);
+   int tmp = boiler_temp_fb*100;
+   String str = "Temperature FB:" + tmp;
+   sendMessageToUL(str);
 }
 
 //---------------------------------------------------
@@ -201,12 +206,25 @@ boolean taskScheduler(unsigned long *lastMillis, unsigned int cycle)
 void controlTemp()
 {
   float temp_diff = (boiler_temp_sp - boiler_temp_fb);
-  if(temp_diff > 0)
+  float output = temp_diff*19 + (boiler_temp_fb - boiler_temp_fb_memory)*1;
+  if( output > 100)
   {
-    if(temp_diff > 3)
+    output = 100;
+  }
+  if (output < 0)
+  {
+    output = 0;
+  }
+  //bool signal_out = 0;
+
+  
+  /*if(temp_diff > 0)
+  {
+    if(temp_diff > 5)
     {
       //Heating element should be ON as we are quite far from the setpoint
        digitalWrite(13, HIGH); // for now we will just display the control signal for testing
+       signal_out = true;
     }
     else
     {
@@ -214,10 +232,12 @@ void controlTemp()
       if(dir >= 0.5)
       {
         digitalWrite(13,LOW); //we're close to the setpoint and we're quickly heating so we can pre-emptively turn off
+        signal_out = false;
       }
       else
       {
         digitalWrite(14,HIGH); // we're close to the setpoint but not approaching it quickly, so keep heating.
+        signal_out = true;
       }
     }
     
@@ -226,6 +246,12 @@ void controlTemp()
   {
     //heating element should be OFF
     digitalWrite(13, LOW); //for now we will just display the control signal for testing
-  }
+    signal_out = false;
+  }*/
+  int pwm = output*2.55;
+  analogWrite(ledpin,pwm);
+  Serial.print("Heater Ouput PWM:");
+  Serial.println(output);
+  Serial.println(pwm);
 }
 
