@@ -1,5 +1,6 @@
 package com.solutions.brewstr;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Set;
 
@@ -88,6 +91,20 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         status.setText("Connection Failed.");
                                     } else {
                                         Log.i("DEBUG","Message Recieved: " + s + "\n\n");
+                                        try {
+                                            TextView txt = (TextView) rootview.findViewById(R.id.textView2);
+                                            if (txt != null) {
+                                                if(s.contains("Temperature"))
+                                                {
+                                                    txt.setText("");
+                                                    txt.setText(s);
+                                                }
+                                            }
+                                        }catch(Exception ex)
+                                        {
+                                            //do something
+                                        }
+
                                     }
                                 }
                             });

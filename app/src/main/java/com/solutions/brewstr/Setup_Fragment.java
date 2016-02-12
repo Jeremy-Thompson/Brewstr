@@ -134,4 +134,8 @@ public class Setup_Fragment extends Fragment  {
     public void onStopTrackingTouch(SeekBar seekBar) {}
 
     }
+    public TextView getTextView()
+    {
+        return setupButton;
+    }
 }

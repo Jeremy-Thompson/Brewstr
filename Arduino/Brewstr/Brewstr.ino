@@ -20,7 +20,7 @@ boolean start_cfg_recvd = 0;
 #define readMessageFromUL_Cycle 2500U
 #define readTemp_Cycle 100U
 #define controlTemp_Cycle 100U
-#define taskCycle 100000U
+#define taskCycle 1000U
 
 // Define the temperature sensor data pin = 10
 #define ONE_WIRE_BUS 10
@@ -180,9 +180,12 @@ void readTemp()
    boiler_temp_fb_memory = boiler_temp_fb;
    sensors.requestTemperatures(); // Send the command to get temperatures
    boiler_temp_fb = sensors.getTempCByIndex(0);
-   int tmp = boiler_temp_fb*100;
-   String str = "Temperature FB:" + tmp;
-   sendMessageToUL(str);
+   int tst = boiler_temp_fb;
+   if(taskScheduler(&taskLastMillis, taskCycle))
+   {
+      Serial.print("Temperature FB: ");
+      Serial.println(tst);
+   }
 }
 
 //---------------------------------------------------
@@ -250,8 +253,8 @@ void controlTemp()
   }*/
   int pwm = output*2.55;
   analogWrite(ledpin,pwm);
-  Serial.print("Heater Ouput PWM:");
-  Serial.println(output);
-  Serial.println(pwm);
+  //Serial.print("Heater Ouput PWM:");
+  //Serial.println(output);
+  //Serial.println(pwm);
 }
 
