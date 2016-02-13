@@ -256,6 +256,7 @@ public class Bluetooth extends Thread {
                 break;
             }
             // send some test data out
+
             // Read data and add it to the buffer
             String s = read();
             if (s.length() > 0)
