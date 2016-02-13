@@ -181,7 +181,7 @@ public class Bluetooth extends Thread {
 
             // Convert to bytes and write
             outStream.write(s.getBytes());
-            Log.i(TAG, "[SENT] " + s);
+            //Log.i(TAG, "[SENT] " + s);
 
         } catch (Exception e) {
             Log.e(TAG, "Write failed!", e);
@@ -196,7 +196,7 @@ public class Bluetooth extends Thread {
         Message msg = Message.obtain();
         msg.obj = s;
         readHandler.sendMessage(msg);
-        Log.i(TAG, "[RECV] " + s);
+        //Log.i(TAG, "[RECV] " + s);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.solutions.brewstr;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
     ProgressBar mMashingProgressBar;
     ProgressBar mBoilingProgressBar;
     ProgressBar mFermentationProgressBar;
+    Activity mActivity;
 
     String mBatchName = "";
     MashingProgressFragment mMashProgFrag = new MashingProgressFragment();
@@ -50,6 +52,7 @@ public class Monitor_Fragment extends Fragment implements View.OnClickListener {
         fragmentManager.beginTransaction()
                 .replace(R.id.step_progress_container, mMashProgFrag)
                 .commit();
+
         return rootview;
     }
 

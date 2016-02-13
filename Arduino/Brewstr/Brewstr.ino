@@ -9,21 +9,22 @@ int boiler_time_sp;
 int hops_time_sp;
 
 // variables to store sensor/system states
-float boiler_temp_fb;
+float boiler_temp_fb = 12.2;
 float boiler_temp_fb_memory; //stores previous boiler temp value
 
-int ledpin = 3; // LED connected to pin 48 (on-board LED)
+int ledpin =11; // LED connected to pin 48 (on-board LED)
+int temp_pin = 3; // Temperature sensor pin in interrupt enabled pin
 
-boolean start_cfg_recvd = 0;
+boolean start_cfg_recvd = 1;
 
 // Defining the scheduling interval for each function
 #define readMessageFromUL_Cycle 2500U
 #define readTemp_Cycle 100U
-#define controlTemp_Cycle 100U
-#define taskCycle 1000U
+#define controlTemp_Cycle 110U
+#define taskCycle 5000U
 
-// Define the temperature sensor data pin = 10
-#define ONE_WIRE_BUS 10
+// Define the temperature sensor data pin = 3
+#define ONE_WIRE_BUS 3
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
@@ -41,7 +42,7 @@ void setup()
 
   //testing setup
   pinMode(13, OUTPUT);
-  pinMode(3, OUTPUT);
+ // pinMode(3, OUTPUT);
 }
 
 //----------------------------------------------
@@ -52,7 +53,6 @@ void loop()
   if(taskScheduler(&readMessageFromUL_LastMillis, readMessageFromUL_Cycle))  // if readpacket is currently scheduled to be called
   {
      //run task 1
-    Serial.println("readPacket: ");
     readMessageFromUL();
   }
   if(taskScheduler(&readTemp_LastMillis, readTemp_Cycle) && start_cfg_recvd) // if readtemp is currently scheduled to be called
@@ -138,9 +138,9 @@ void decodeMessage(String message)
     }
     count += 1;
   }
-              Serial.println(message);
+            
               //read the values into integer storage for the control system.
-              Serial.println("Recieved Brew Configuration:");
+              
               //convert all strings into integers
               mash_temp_sp = Mashtemp.toInt();
               mash_time_sp = Mashtime.toInt();
@@ -150,16 +150,6 @@ void decodeMessage(String message)
 
               start_cfg_recvd = true;
               
-              Serial.print("Mash Temp Setpoint: ");
-              Serial.println(mash_temp_sp);
-              Serial.print("Mash Time Setpoint: ");
-              Serial.println(mash_time_sp);
-              Serial.print("Boil Temp Setpoint: ");
-              Serial.println(boiler_temp_sp);
-              Serial.print("Boil Time Setpoint: ");
-              Serial.println(boiler_time_sp);
-              Serial.print("Hops Time Setpoint: ");
-              Serial.println(hops_time_sp);
               Serial.flush();
 }
 
@@ -169,7 +159,7 @@ void decodeMessage(String message)
 void sendMessageToUL(String message)
 {
   //send status messages to android app
-  Serial.println(message);
+   Serial.println(message);
 }
 
 //---------------------------------------------------
@@ -180,11 +170,11 @@ void readTemp()
    boiler_temp_fb_memory = boiler_temp_fb;
    sensors.requestTemperatures(); // Send the command to get temperatures
    boiler_temp_fb = sensors.getTempCByIndex(0);
-   int tst = boiler_temp_fb;
-   if(taskScheduler(&taskLastMillis, taskCycle))
+   int boiler_temp_fb_int = boiler_temp_fb*100;
+   if((boiler_temp_fb - boiler_temp_fb_memory)!= 0)
    {
-      Serial.print("Temperature FB: ");
-      Serial.println(tst);
+      Serial.print("Temperature: ");
+      Serial.println(boiler_temp_fb_int);
    }
 }
 

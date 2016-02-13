@@ -28,7 +28,7 @@ import android.widget.TextView;
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    Start_Fragment start_frag = new Start_Fragment();
+    public Start_Fragment start_frag = new Start_Fragment();
     Setup_Fragment setup_frag = new Setup_Fragment();
     ListOfBatchView monitor_frag = new ListOfBatchView();
     Bluetooth bluetooth;

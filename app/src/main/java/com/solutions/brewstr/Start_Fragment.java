@@ -90,14 +90,21 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         connected = false;
                                         status.setText("Connection Failed.");
                                     } else {
-                                        Log.i("DEBUG","Message Recieved: " + s + "\n\n");
                                         try {
                                             TextView txt = (TextView) rootview.findViewById(R.id.textView2);
                                             if (txt != null) {
                                                 if(s.contains("Temperature"))
                                                 {
+                                                    String tmp = "";
+                                                    Log.i("DEBUG","Message Recieved: " + s + "\n\n");
+                                                    for(int i = 0;i<4;i++)
+                                                    {
+                                                        tmp+= s.charAt(13+i);
+                                                    }
+                                                    float tmp_flt = Float.parseFloat(tmp)/100;
                                                     txt.setText("");
-                                                    txt.setText(s);
+                                                    txt.setText(tmp_flt + " C");
+
                                                 }
                                             }
                                         }catch(Exception ex)
