@@ -1,11 +1,8 @@
 package com.solutions.brewstr;
 
-<<<<<<< HEAD
 import android.app.Activity;
-=======
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
->>>>>>> origin/master
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
