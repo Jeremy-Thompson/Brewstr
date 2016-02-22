@@ -185,6 +185,8 @@ void readTemp()
    {  
       Serial.print("Temperature: ");
       Serial.println(boiler_temp_feedback_int);
+      Serial.print("Time: ");
+      Serial.println(millis() - start_brew_cycle_time);
    }
 }
 
