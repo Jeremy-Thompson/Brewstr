@@ -2,20 +2,27 @@
 #include <DallasTemperature.h>
 
 // variables to store brew configuration/setpoints
-int mashing_temp_setpoint;
-int mashing_time_setpoint;
+unsigned long mashing_temp_setpoint;
+unsigned long mashing_time_setpoint;
 
 
-int boiler_temp_setpoint = 0;
-int boiler_temp_setpoint_in;
-int boiler_time_setpoint;
-int hops_time_setpoint;
+unsigned long boiler_temp_setpoint = 0;
+unsigned long boiler_temp_setpoint_in;
+unsigned long boiler_time_setpoint;
+unsigned long hops_time_setpoint;
 
 // variables to store sensor/system states
-float boiler_temp_feedback = 12.2;
-float boiler_temp_feedback_memory; //stores previous boiler temp value
+float boiler_temp_feedback_1 = 0;
+float boiler_temp_feedback_1_memory; //stores previous boiler temp value
 
-int ledpin =11; // LED connected to pin 48 (on-board LED)
+// variables to store sensor/system states
+float boiler_temp_feedback_2 = 0;
+float boiler_temp_feedback_2_memory; //stores previous boiler temp value
+
+int boiler_temp_feedback_avg_memory;
+int boiler_temp_feedback_avg = 0;
+
+int pwmpin =10; // LED connected to pin 48 (on-board LED)
 int temp_pin = 3; // Temperature sensor pin in interrupt enabled pin
 
 boolean start_cfg_recvd = 0;
@@ -39,17 +46,19 @@ unsigned long taskLastMillis = 0;
 
 unsigned long start_brew_cycle_time;
 unsigned long elapsed_brew_cycle_time;
-unsigned long t;
+unsigned long long t;
+
+String system_state = "Standby";
 
   void setup()
   {
   Serial.begin(9600); //set baud rate for bluetooth serial input port
   // Start up the library
   sensors.begin();
+  TCCR1B = (TCCR1B & 0b11111000) | 0x05;
 
   //testing setup
-  pinMode(13, OUTPUT);
- // pinMode(3, OUTPUT);
+  pinMode(10, OUTPUT);
 }
 
 //----------------------------------------------
@@ -177,14 +186,21 @@ void sendMessageToUL(String message)
 //---------------------------------------------------
 void readTemp()
 {
-   boiler_temp_feedback_memory = boiler_temp_feedback;
+   boiler_temp_feedback_1_memory = boiler_temp_feedback_1;
+   boiler_temp_feedback_2_memory = boiler_temp_feedback_2;
+   boiler_temp_feedback_avg_memory = boiler_temp_feedback_avg;
    sensors.requestTemperatures(); // Send the command to get temperatures
-   boiler_temp_feedback = sensors.getTempCByIndex(0);
-   int boiler_temp_feedback_int = boiler_temp_feedback*100;
-   if((boiler_temp_feedback - boiler_temp_feedback_memory)!= 0)
+   boiler_temp_feedback_1 = sensors.getTempCByIndex(0);
+   boiler_temp_feedback_2 = sensors.getTempCByIndex(1);
+   int boiler_temp_feedback_1_int = boiler_temp_feedback_1*100;
+   int boiler_temp_feedback_2_int = boiler_temp_feedback_2*100;
+   if(((boiler_temp_feedback_1 - boiler_temp_feedback_1_memory)!= 0)||((boiler_temp_feedback_2 - boiler_temp_feedback_2_memory)!= 0))
    {  
+      boiler_temp_feedback_avg = ( boiler_temp_feedback_1_int + boiler_temp_feedback_2_int)/2;
       Serial.print("Temperature: ");
-      Serial.println(boiler_temp_feedback_int);
+      Serial.println(boiler_temp_feedback_avg);
+      Serial.println("----------------------------------------");
+
    }
 }
 
@@ -208,42 +224,30 @@ boolean taskScheduler(unsigned long *lastMillis, unsigned int cycle)
 //--------------------------------------------------
 void controlTemp()
 {
+  unsigned long remaining_time;
   elapsed_brew_cycle_time = millis();
   t = elapsed_brew_cycle_time - start_brew_cycle_time;
   if(t <= mashing_time_setpoint*1000)
   {
+    system_state = "Mashing";
     boiler_temp_setpoint = mashing_temp_setpoint;
+    remaining_time = mashing_time_setpoint - t/1000;
   }
-  Serial.println();
-  Serial.println((t > mashing_time_setpoint*1000) && (t < (mashing_time_setpoint*1000 + boiler_time_setpoint*1000)));
-  
-  if ((t > mashing_time_setpoint*1000) && (t < (mashing_time_setpoint*1000 + boiler_time_setpoint*1000)))
+  else if ((t > mashing_time_setpoint*1000) && (t < (mashing_time_setpoint*1000 + boiler_time_setpoint*1000)))
   {
+    system_state = "Boiling";
     boiler_temp_setpoint = boiler_temp_setpoint_in;
+    remaining_time = boiler_time_setpoint - t/1000;
   }
   else {
+    system_state = "Finished";
     boiler_temp_setpoint = 0;
+    remaining_time = 0;
   }
-  Serial.println();
-  Serial.print("Boiler Temp SP:");
-  Serial.println(boiler_temp_setpoint);
-  Serial.print("Boiler Temp FB: ");
-  Serial.println(boiler_temp_feedback);
-  Serial.print("Elapsed Time:");
-  Serial.println(t);
-  Serial.println();
-  Serial.println("Mashing Temp Setpoint In: ");
-  Serial.print(mashing_temp_setpoint);
-  Serial.println("Mashing Time Setpoint In: ");
-  Serial.print(mashing_time_setpoint);
-  Serial.println("Boiler Temp Setpoint In: " );
-  Serial.print(boiler_temp_setpoint_in);
-  Serial.println("Boiler Time Setpoint In: ");
-  Serial.print(boiler_time_setpoint);
-  Serial.println();
 
-  float temp_difference= (boiler_temp_setpoint - boiler_temp_feedback);
-  float output = temp_difference*19 + (boiler_temp_feedback - boiler_temp_feedback_memory)*1;
+  float temp_difference= (boiler_temp_setpoint - boiler_temp_feedback_avg);
+  float output = temp_difference*19 + (boiler_temp_feedback_avg - boiler_temp_feedback_avg_memory)*1;
+  float boiler_temp_feedback_avg_float = boiler_temp_feedback_avg / 100;
   if( output > 100)
   {
     output = 100;
@@ -254,10 +258,22 @@ void controlTemp()
   }
 
   int pwm = output*2.55;
-  analogWrite(ledpin,pwm);
-  //Serial.print("Heater Ouput PWM:");
-  //Serial.println(output);
-  //Serial.println(pwm);
+  analogWrite(pwmpin,pwm);
+  Serial.print("System State: ");
+  Serial.println(system_state);
+  Serial.print("Time Remaining: ");
+  Serial.print(remaining_time);
+  Serial.println(" seconds");
+  Serial.print("Boiler Temperature Setpoint: ");
+  Serial.println(boiler_temp_setpoint);
+  Serial.print("Boiler Temperature Feedback: ");
+  Serial.println(boiler_temp_feedback_avg_float);
+  Serial.print("Heater PWM Signal: ");
+  Serial.print(pwm*100/255);
+  Serial.println(" %");
+  Serial.println();
+  Serial.println("----------------------------------------");
+  Serial.println();
 }
 //Function to abort the brew process. input parameter is the system state, i.e. what stage in the brewing process we are at.
 // the stage will determine the correct course of action for aborting the process

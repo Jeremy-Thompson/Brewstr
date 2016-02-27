@@ -1,5 +1,6 @@
 package com.solutions.brewstr;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,8 @@ public class Setup_Fragment extends Fragment  {
                                                    messageToLL += (hopsTimeSB.getProgress());
 
                                                    ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
+                                                   StatusFragment status_fragment = new StatusFragment();
+                                                   ((MainActivity) getActivity()).fragmentReplace(status_fragment);
                                                }
                                                else{
                                                    //display error message that the device is disconnected - return to start page
