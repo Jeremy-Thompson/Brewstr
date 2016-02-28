@@ -62,7 +62,7 @@ public class Setup_Fragment extends Fragment  {
                                                    messageToLL += (hopsTimeSB.getProgress());
 
                                                    ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
-                                                   StatusFragment status_fragment = new StatusFragment();
+                                                   Status_Fragment status_fragment = new Status_Fragment();
                                                    ((MainActivity) getActivity()).fragmentReplace(status_fragment);
                                                }
                                                else{
