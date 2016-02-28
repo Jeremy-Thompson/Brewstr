@@ -5,4 +5,20 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="text_title">
+        <item name="android:textSize">64dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="text_secondary_title">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BatchValues" parent="Base.TextAppearance.AppCompat.Display1">
+        <item name="android:textSize">36dp</item>
+        <item name="android:textColor">@color/yellow</item>
+        <item name="android:background">@drawable/value_background</item>
+        <item name="android:padding">10dp</item>
+    </style>
 </resources>

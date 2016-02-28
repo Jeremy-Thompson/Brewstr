@@ -86,7 +86,7 @@ public class DonutProgressBar extends View {
     public DonutProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        default_text_size = 50;
+        default_text_size = 100;
         min_size = 200;
         default_stroke_width = 30;
         default_inner_bottom_text_size = 50;
@@ -357,7 +357,15 @@ public class DonutProgressBar extends View {
         canvas.drawArc(finishedOuterRect, getStartingDegree(), getProgressAngle(), false, finishedPaint);
         canvas.drawArc(unfinishedOuterRect, getStartingDegree() + getProgressAngle(), 360 - getProgressAngle(), false, unfinishedPaint);
 
-        String text = this.text != null ? this.text : prefixText + progress + suffixText;
+        int minutes = progress/60;
+        int seconds = progress%60;
+        String secondsLeft = "";
+        if (seconds > 9){
+            secondsLeft = Integer.toString(seconds);
+        } else {
+            secondsLeft = "0" + Integer.toString(seconds);
+        }
+        String text = this.text != null ? this.text : prefixText + minutes + ":" + secondsLeft;
         if (!TextUtils.isEmpty(text)) {
             float textHeight = textPaint.descent() + textPaint.ascent();
             canvas.drawText(text, (getWidth() - textPaint.measureText(text)) / 2.0f, (getWidth() - textHeight) / 2.0f, textPaint);

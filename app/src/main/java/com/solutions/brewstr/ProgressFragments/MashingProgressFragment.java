@@ -27,20 +27,20 @@ public class MashingProgressFragment extends android.support.v4.app.Fragment {
 
 
 
-    int temp = 170;
-    int amount = 100;
-    int time = 30;
+    int temp = 1545;
+    int amount = 140;
+    int time = 36;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.mash_prog_view, container, false);
         cPB = (DonutProgressBar) rootview.findViewById(R.id.donut_prog);
-        cPB.setMax(30000/1000);
+        cPB.setMax(300000/1000);
         mashTemp = (TextView) rootview.findViewById(R.id.mashing_temp);
         gristAmount = (TextView) rootview.findViewById(R.id.grist_amount);
         timeRemaining = (TextView) rootview.findViewById(R.id.time_remaining);
         initializeParameters();
 
-        new CountDownTimer(30000, 250) {
+        new CountDownTimer(300000, 1000) {
             public void onTick(long millisUntilFinished) {
                 cPB.setProgress(Math.round(millisUntilFinished)/1000);
                 cPB.invalidate();
