@@ -52,7 +52,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                         List<Integer> timeLog = new ArrayList<Integer>(mTempVsTime.keySet());
                         for (int i = 0; i < tempSet.size(); i++){
                             System.out.printf("%.2f   %d%n", tempSet.get(i), timeLog.get(i));
-                        }
+                                }
                     }
                 }
             });
@@ -114,11 +114,11 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         try {
                                             TextView txt = (TextView) rootview.findViewById(R.id.textView2);
                                             if (txt != null) {
-                                                if(s.contains("Temperature"))
+                                                if(s.contains("Temperature:"))
                                                 {
                                                     // This currently does not use the "temperature" or "time" key
                                                     // TODO: decide if we need the keys
-                                                    Pattern pattern = Pattern.compile("\\d*");
+                                                    Pattern pattern = Pattern.compile("[\\d*]");
                                                     Matcher matcher = pattern.matcher(s);
                                                     List<String> vals= new ArrayList<>();
                                                     while (matcher.find()) {
@@ -136,6 +136,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         }catch(Exception ex)
                                         {
                                             //do something
+                                            Log.i("DEBUG", ex.getMessage());
                                         }
 
                                     }
