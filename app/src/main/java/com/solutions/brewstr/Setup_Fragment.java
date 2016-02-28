@@ -18,7 +18,7 @@ import android.widget.TextView;
 public class Setup_Fragment extends Fragment  {
 
     //app constants
-    static int MASHTEMPOFFSET = 75;
+    static int MASHTEMPOFFSET = 67;
     static int MASHTIMEOFFSET = 50;
     static int BOILTEMPOFFSET = 50;
     static int BOILTIMEOFFSET = 50;

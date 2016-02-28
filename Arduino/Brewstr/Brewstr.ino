@@ -64,7 +64,7 @@ String system_state = "Standby";
 //----------------------------------------------
 // Main Running loop that calls the individual functions via task scheduler function (cycleCheck)
 //----------------------------------------------
-void loop()
+void loop() 
 {
   if(taskScheduler(&readMessageFromUL_LastMillis, readMessageFromUL_Cycle))  // if readpacket is currently scheduled to be called
   {
@@ -197,9 +197,11 @@ void readTemp()
    if(((boiler_temp_feedback_1 - boiler_temp_feedback_1_memory)!= 0)||((boiler_temp_feedback_2 - boiler_temp_feedback_2_memory)!= 0))
    {  
       boiler_temp_feedback_avg = ( boiler_temp_feedback_1_int + boiler_temp_feedback_2_int)/2;
-      Serial.print("Temperature: ");
-      Serial.println(boiler_temp_feedback_avg);
-      Serial.println("----------------------------------------");
+      //Serial.print("Temperature: ");
+      //Serial.println(boiler_temp_feedback_avg);
+      //Serial.print("Time: ");
+      //Serial.println(millis() - start_brew_cycle_time);
+      //Serial.println("----------------------------------------"); 
 
    }
 }
@@ -227,27 +229,31 @@ void controlTemp()
   unsigned long remaining_time;
   elapsed_brew_cycle_time = millis();
   t = elapsed_brew_cycle_time - start_brew_cycle_time;
-  if(t <= mashing_time_setpoint*1000)
+  if(t <= mashing_time_setpoint*60000)
   {
     system_state = "Mashing";
     boiler_temp_setpoint = mashing_temp_setpoint;
-    remaining_time = mashing_time_setpoint - t/1000;
+    remaining_time = mashing_time_setpoint*60 - t/1000;
   }
-  else if ((t > mashing_time_setpoint*1000) && (t < (mashing_time_setpoint*1000 + boiler_time_setpoint*1000)))
+  else if ((t > mashing_time_setpoint*60000) && (t < (mashing_time_setpoint*60000 + boiler_time_setpoint*60000)))
   {
     system_state = "Boiling";
     boiler_temp_setpoint = boiler_temp_setpoint_in;
-    remaining_time = boiler_time_setpoint - t/1000;
+    remaining_time = boiler_time_setpoint*60 - t/1000;
   }
   else {
     system_state = "Finished";
     boiler_temp_setpoint = 0;
     remaining_time = 0;
   }
-
-  float temp_difference= (boiler_temp_setpoint - boiler_temp_feedback_avg);
-  float output = temp_difference*19 + (boiler_temp_feedback_avg - boiler_temp_feedback_avg_memory)*1;
-  float boiler_temp_feedback_avg_float = boiler_temp_feedback_avg / 100;
+  float boiler_temp_feedback_avg_flt = boiler_temp_feedback_avg;
+  float temp_difference= (boiler_temp_setpoint - boiler_temp_feedback_avg_flt/100);
+  Serial.println(boiler_temp_setpoint);
+  Serial.println(boiler_temp_feedback_avg);
+  Serial.println(temp_difference);
+  float output = temp_difference*75 + (boiler_temp_feedback_avg - boiler_temp_feedback_avg_memory)*1;
+  float boiler_temp_feedback_avg_float = boiler_temp_feedback_avg;
+  boiler_temp_feedback_avg_float = boiler_temp_feedback_avg_float/100;
   if( output > 100)
   {
     output = 100;
@@ -267,7 +273,7 @@ void controlTemp()
   Serial.print("Boiler Temperature Setpoint: ");
   Serial.println(boiler_temp_setpoint);
   Serial.print("Boiler Temperature Feedback: ");
-  Serial.println(boiler_temp_feedback_avg_float);
+  Serial.println(boiler_temp_feedback_avg);
   Serial.print("Heater PWM Signal: ");
   Serial.print(pwm*100/255);
   Serial.println(" %");

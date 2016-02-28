@@ -18,7 +18,13 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by jeremy on 2016-01-08.
@@ -26,15 +32,30 @@ import java.util.Set;
 public class Start_Fragment extends Fragment implements View.OnClickListener {
     View rootview;
     Button startButton;
+    Button displayDataLog;
     Bluetooth bt;
     boolean connected = false;
     TextView status;
+    public Map<Integer, Float> mTempVsTime = new HashMap<>();
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.start_view, container, false);
         startButton = (Button) rootview.findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
+        displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
+        displayDataLog.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!mTempVsTime.isEmpty()) {
+                        List<Float> tempSet = new ArrayList<Float>(mTempVsTime.values());
+                        List<Integer> timeLog = new ArrayList<Integer>(mTempVsTime.keySet());
+                        for (int i = 0; i < tempSet.size(); i++){
+                            System.out.printf("%.2f   %d%n", tempSet.get(i), timeLog.get(i));
+                        }
+                    }
+                }
+            });
         return rootview;
     }
 
@@ -95,16 +116,21 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                             if (txt != null) {
                                                 if(s.contains("Temperature"))
                                                 {
-                                                    String tmp = "";
-                                                    Log.i("DEBUG","Message Recieved: " + s + "\n\n");
-                                                    for(int i = 0;i<4;i++)
-                                                    {
-                                                        tmp+= s.charAt(13+i);
+                                                    // This currently does not use the "temperature" or "time" key
+                                                    // TODO: decide if we need the keys
+                                                    Pattern pattern = Pattern.compile("\\d*");
+                                                    Matcher matcher = pattern.matcher(s);
+                                                    List<String> vals= new ArrayList<>();
+                                                    while (matcher.find()) {
+                                                        vals.add((matcher.group()));
                                                     }
-                                                    float tmp_flt = Float.parseFloat(tmp)/100;
-                                                    txt.setText("");
-                                                    txt.setText(tmp_flt + " C");
+                                                    float currentTemperature = Float.parseFloat(vals.get(0))/100;
+                                                    int time = Integer.parseInt(vals.get(1));
+                                                    mTempVsTime.put(time, currentTemperature);
 
+                                                    Log.i("DEBUG","Message Recieved: " + s + "\n\n");
+                                                    txt.setText("");
+                                                    txt.setText(currentTemperature + " C after " + time + " seconds");
                                                 }
                                             }
                                         }catch(Exception ex)
