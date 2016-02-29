@@ -44,6 +44,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
         bluetoothButton = (ImageButton) rootview.findViewById(R.id.bluetooth_button);
         bluetoothButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
+        /*
         displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
         displayDataLog.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -53,10 +54,11 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                         List<Integer> timeLog = new ArrayList<Integer>(mTempVsTime.keySet());
                         for (int i = 0; i < tempSet.size(); i++){
                             System.out.printf("%.2f   %d%n", tempSet.get(i), timeLog.get(i));
-                        }
+                                }
                     }
                 }
             });
+            */
         return rootview;
     }
 
@@ -113,13 +115,11 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         status.setText("Connection Failed.");
                                     } else {
                                         try {
-                                            TextView txt = (TextView) rootview.findViewById(R.id.textView2);
-                                            if (txt != null) {
-                                                if(s.contains("Temperature"))
+                                                if(s.contains("Temperature:"))
                                                 {
                                                     // This currently does not use the "temperature" or "time" key
                                                     // TODO: decide if we need the keys
-                                                    Pattern pattern = Pattern.compile("\\d*");
+                                                    Pattern pattern = Pattern.compile("[\\d*]");
                                                     Matcher matcher = pattern.matcher(s);
                                                     List<String> vals= new ArrayList<>();
                                                     while (matcher.find()) {
@@ -130,13 +130,18 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                                     mTempVsTime.put(time, currentTemperature);
 
                                                     Log.i("DEBUG","Message Recieved: " + s + "\n\n");
-                                                    txt.setText("");
-                                                    txt.setText(currentTemperature + " C after " + time + " seconds");
+                                                    /*
+                                                    Status_Fragment frag = ((MainActivity) getActivity()).setup_frag.status_fragment;
+                                                    if(frag != null) {
+                                                        frag.setCurrentTemperatureFeedback(Float.toString(currentTemperature));
+                                                    }
+                                                    */
                                                 }
-                                            }
+
                                         }catch(Exception ex)
                                         {
                                             //do something
+                                            Log.i("DEBUG", ex.getMessage());
                                         }
 
                                     }

@@ -1,5 +1,6 @@
 package com.solutions.brewstr;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 public class Setup_Fragment extends Fragment  {
 
     //app constants
-    static int MASHTEMPOFFSET = 75;
+    static int MASHTEMPOFFSET = 67;
     static int MASHTIMEOFFSET = 50;
     static int BOILTEMPOFFSET = 50;
     static int BOILTIMEOFFSET = 50;
@@ -37,6 +38,8 @@ public class Setup_Fragment extends Fragment  {
     TextView hopsTimeSP;
 
     Button setupButton;
+
+    Status_Fragment status_fragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,6 +64,12 @@ public class Setup_Fragment extends Fragment  {
                                                    messageToLL += (hopsTimeSB.getProgress());
 
                                                    ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
+                                                    status_fragment = new Status_Fragment();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putInt("MashTime", MASHTIMEOFFSET + mashTimeSB.getProgress());
+                                                    bundle.putInt("MashTemp", MASHTEMPOFFSET + mashTempSB.getProgress());
+                                                    status_fragment.setArguments(bundle);
+                                                   ((MainActivity) getActivity()).fragmentReplace(status_fragment);
                                                }
                                                else{
                                                    //display error message that the device is disconnected - return to start page
