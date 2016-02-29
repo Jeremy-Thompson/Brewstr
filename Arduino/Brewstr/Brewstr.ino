@@ -197,11 +197,11 @@ void readTemp()
    if(((boiler_temp_feedback_1 - boiler_temp_feedback_1_memory)!= 0)||((boiler_temp_feedback_2 - boiler_temp_feedback_2_memory)!= 0))
    {  
       boiler_temp_feedback_avg = ( boiler_temp_feedback_1_int + boiler_temp_feedback_2_int)/2;
-      //Serial.print("Temperature: ");
-      //Serial.println(boiler_temp_feedback_avg);
-      //Serial.print("Time: ");
-      //Serial.println(millis() - start_brew_cycle_time);
-      //Serial.println("----------------------------------------"); 
+      Serial.print("Temperature: ");
+      Serial.println(boiler_temp_feedback_avg);
+      Serial.print("Time: ");
+      Serial.println(millis() - start_brew_cycle_time);
+      Serial.println("----------------------------------------"); 
 
    }
 }

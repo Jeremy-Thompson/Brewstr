@@ -3,7 +3,9 @@ package com.solutions.brewstr;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,12 +20,15 @@ import org.w3c.dom.Text;
 
 public class Status_Fragment extends Fragment {
     View rootview;
+    int mTimer;
+    int mTemperaturesp;
 
-    TextView mStageName;
-    TextView mCurrentTemperatureSetpoint;
-    TextView mCurrentTemperatureFeedback;
-    TextView mBatchVolume;
-    TextView mBeerType;
+    private TextView mStageName;
+    private TextView mCurrentTemperatureSetpoint;
+    private TextView mCurrentTemperatureFeedback;
+    private TextView mBatchVolume;
+    private TextView mBeerType;
+    private DonutProgressBar cPB;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -33,6 +38,23 @@ public class Status_Fragment extends Fragment {
         mCurrentTemperatureFeedback = (TextView) rootview.findViewById(R.id.current_te);
         mBatchVolume = (TextView) rootview.findViewById(R.id.volume);
         mBeerType = (TextView) rootview.findViewById(R.id.beer_type);
+        cPB = (DonutProgressBar) rootview.findViewById(R.id.stage_time_remaining);
+
+        Bundle bundle = this.getArguments();
+        mTimer = bundle.getInt("MashTime");
+        mTemperaturesp = bundle.getInt("MashTemp");
+        mCurrentTemperatureSetpoint.setText(Integer.toString(mTemperaturesp) + " C");
+
+        new CountDownTimer(mTimer*60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                cPB.setProgress(Math.round(millisUntilFinished)/1000);
+                cPB.invalidate();
+            }
+
+            public void onFinish() {
+
+            }
+        }.start();
         return rootview;
     }
     public void setStageName(String str)

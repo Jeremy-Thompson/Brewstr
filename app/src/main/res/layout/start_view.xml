@@ -33,20 +33,4 @@
         android:background="@drawable/start_btn"
         android:text="" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.07" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Display Temp Logs"
-        android:id="@+id/display_logs"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.07" />
-
 </LinearLayout>

@@ -43,6 +43,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
         startButton = (Button) rootview.findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
+        /*
         displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
         displayDataLog.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,6 +57,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                     }
                 }
             });
+            */
         return rootview;
     }
 
@@ -112,8 +114,6 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         status.setText("Connection Failed.");
                                     } else {
                                         try {
-                                            TextView txt = (TextView) rootview.findViewById(R.id.textView2);
-                                            if (txt != null) {
                                                 if(s.contains("Temperature:"))
                                                 {
                                                     // This currently does not use the "temperature" or "time" key
@@ -129,10 +129,14 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                                     mTempVsTime.put(time, currentTemperature);
 
                                                     Log.i("DEBUG","Message Recieved: " + s + "\n\n");
-                                                    txt.setText("");
-                                                    txt.setText(currentTemperature + " C after " + time + " seconds");
+                                                    /*
+                                                    Status_Fragment frag = ((MainActivity) getActivity()).setup_frag.status_fragment;
+                                                    if(frag != null) {
+                                                        frag.setCurrentTemperatureFeedback(Float.toString(currentTemperature));
+                                                    }
+                                                    */
                                                 }
-                                            }
+
                                         }catch(Exception ex)
                                         {
                                             //do something

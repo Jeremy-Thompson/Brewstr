@@ -39,6 +39,8 @@ public class Setup_Fragment extends Fragment  {
 
     Button setupButton;
 
+    Status_Fragment status_fragment;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.setup_view,container,false);
@@ -62,7 +64,11 @@ public class Setup_Fragment extends Fragment  {
                                                    messageToLL += (hopsTimeSB.getProgress());
 
                                                    ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
-                                                   Status_Fragment status_fragment = new Status_Fragment();
+                                                    status_fragment = new Status_Fragment();
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putInt("MashTime", MASHTIMEOFFSET + mashTimeSB.getProgress());
+                                                    bundle.putInt("MashTemp", MASHTEMPOFFSET + mashTempSB.getProgress());
+                                                    status_fragment.setArguments(bundle);
                                                    ((MainActivity) getActivity()).fragmentReplace(status_fragment);
                                                }
                                                else{
