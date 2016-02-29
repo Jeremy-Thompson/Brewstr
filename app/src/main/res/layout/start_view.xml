@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:weightSum="1">
+    android:weightSum="1"
+    style="@style/AppTheme">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -13,25 +14,22 @@
         android:layout_gravity="top">
 
         <TextView
+            style="@style/text_secondary_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Connect To Brewstr"
             android:id="@+id/startLabel"
-            android:layout_gravity="center"
-            android:textSize="25dp"
-            android:backgroundTintMode="src_over"
-            android:backgroundTint="@color/abc_primary_text_material_dark" />
+            android:layout_gravity="center" />
     </FrameLayout>
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <ImageButton
+        android:id="@+id/bluetooth_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/bluetooth_white"
+        android:background="@drawable/bluetooth_shape"
         android:layout_gravity="center"
-        android:padding="10dp"
-        android:textColor="#ffffff"
-        android:background="@drawable/start_btn"
-        android:text="" />
+        android:padding="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"

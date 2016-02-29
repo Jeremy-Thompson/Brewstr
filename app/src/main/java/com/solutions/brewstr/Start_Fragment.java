@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
  */
 public class Start_Fragment extends Fragment implements View.OnClickListener {
     View rootview;
-    Button startButton;
+    ImageButton bluetoothButton;
     Button displayDataLog;
     Bluetooth bt;
     boolean connected = false;
@@ -40,8 +41,8 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.start_view, container, false);
-        startButton = (Button) rootview.findViewById(R.id.startButton);
-        startButton.setOnClickListener(this);
+        bluetoothButton = (ImageButton) rootview.findViewById(R.id.bluetooth_button);
+        bluetoothButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
         displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
         displayDataLog.setOnClickListener(new View.OnClickListener() {
