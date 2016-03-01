@@ -42,6 +42,7 @@ public class Status_Fragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         mTimer = bundle.getInt("MashTime");
+        cPB.setMax(mTimer*60000);
         mTemperaturesp = bundle.getInt("MashTemp");
         mCurrentTemperatureSetpoint.setText(Integer.toString(mTemperaturesp) + " C");
 

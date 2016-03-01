@@ -31,6 +31,7 @@ public class MainActivity extends ActionBarActivity
     public Start_Fragment start_frag = new Start_Fragment();
     Setup_Fragment setup_frag = new Setup_Fragment();
     ListOfBatchView monitor_frag = new ListOfBatchView();
+    Status_Fragment status_fragment = new Status_Fragment();
     Bluetooth bluetooth;
 
     /**

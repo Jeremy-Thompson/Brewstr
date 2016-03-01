@@ -44,8 +44,8 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
         bluetoothButton = (ImageButton) rootview.findViewById(R.id.bluetooth_button);
         bluetoothButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
-        /*
-        displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
+
+/*       displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
         displayDataLog.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -57,8 +57,8 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                 }
                     }
                 }
-            });
-            */
+            });*/
+
         return rootview;
     }
 
@@ -127,21 +127,28 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                                     }
                                                     float currentTemperature = Float.parseFloat(vals.get(0))/100;
                                                     int time = Integer.parseInt(vals.get(1));
+
                                                     mTempVsTime.put(time, currentTemperature);
 
                                                     Log.i("DEBUG","Message Recieved: " + s + "\n\n");
-                                                    /*
-                                                    Status_Fragment frag = ((MainActivity) getActivity()).setup_frag.status_fragment;
+
+                                                    Status_Fragment frag = ((MainActivity) getActivity()).status_fragment;
                                                     if(frag != null) {
-                                                        frag.setCurrentTemperatureFeedback(Float.toString(currentTemperature));
+                                                        String str = Float.toString(currentTemperature);
+                                                        frag.setCurrentTemperatureFeedback(str);
                                                     }
-                                                    */
+
                                                 }
 
                                         }catch(Exception ex)
                                         {
                                             //do something
-                                            Log.i("DEBUG", ex.getMessage());
+                                            if(ex.getMessage() != null) {
+                                                Log.i("DEBUG", ex.getMessage());
+                                            }
+                                            else {
+                                                // do fuck all
+                                            }
                                         }
 
                                     }
