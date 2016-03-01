@@ -45,13 +45,13 @@ public class DonutProgressBar extends View {
     private float innerBottomTextHeight;
 
     private final float default_stroke_width;
-    private final int default_finished_color = Color.rgb(66, 145, 241);
-    private final int default_unfinished_color = Color.rgb(204, 204, 204);
-    private final int default_text_color = Color.rgb(66, 145, 241);
+    private final int default_finished_color = Color.YELLOW;
+    private final int default_unfinished_color = Color.BLACK;
+    private final int default_text_color = Color.WHITE;
     private final int default_inner_bottom_text_color = Color.rgb(66, 145, 241);
     private final int default_inner_background_color = Color.TRANSPARENT;
     private final int default_max = 100;
-    private final int default_startingDegree = 0;
+    private final int default_startingDegree = 270;
     private final float default_text_size;
     private final float default_inner_bottom_text_size;
     private final int min_size;
@@ -368,6 +368,7 @@ public class DonutProgressBar extends View {
         String text = this.text != null ? this.text : prefixText + minutes + ":" + secondsLeft;
         if (!TextUtils.isEmpty(text)) {
             float textHeight = textPaint.descent() + textPaint.ascent();
+            textPaint.setTextSize(innerCircleRadius*0.3f);
             canvas.drawText(text, (getWidth() - textPaint.measureText(text)) / 2.0f, (getWidth() - textHeight) / 2.0f, textPaint);
         }
 
