@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/material_blue_grey_900">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
     <TextView
@@ -17,28 +16,30 @@
         android:layout_centerHorizontal="true" />
 
     <com.solutions.brewstr.DonutProgressBar
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:id="@+id/stage_time_remaining"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_below="@+id/stage_name"
         android:paddingTop="@dimen/abc_action_bar_progress_bar_size" />
 
-    <RelativeLayout
-        android:layout_width="300dp"
+    <GridLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/value_1"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/stage_time_remaining">
+        android:layout_below="@+id/stage_time_remaining"
+        android:columnCount="2"
+        android:rowCount="2">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/temp_display"
             android:orientation="vertical"
-            android:layout_marginLeft="@dimen/linear_layout_margin"
-            android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material">
+            android:layout_marginRight="@dimen/linear_layout_margin"
+            android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material"
+            android:layout_gravity="fill_horizontal">
 
             <TextView
                 style="@style/text_secondary_title"
@@ -46,13 +47,13 @@
                 android:layout_height="wrap_content"
                 android:text="DESIRED TEMP"
                 android:id="@+id/temp_title"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 style="@style/BatchValues"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="40 C"
+                android:text="  40 C  "
                 android:id="@+id/current_temp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"/>
@@ -61,10 +62,10 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/temp_display"
             android:orientation="vertical"
             android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material"
-            android:layout_marginLeft="@dimen/linear_layout_margin">
+            android:layout_marginLeft="@dimen/linear_layout_margin"
+            android:layout_gravity="fill_horizontal">
 
             <TextView
                 style="@style/text_secondary_title"
@@ -72,24 +73,17 @@
                 android:layout_height="wrap_content"
                 android:text="ACTUAL TEMP"
                 android:id="@+id/temp_tit"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 style="@style/BatchValues"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="40 C"
+                android:text="  40 C  "
                 android:id="@+id/current_te"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"/>
         </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/value_1">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -97,7 +91,8 @@
             android:id="@+id/volume_container"
             android:orientation="vertical"
             android:layout_marginRight="@dimen/linear_layout_margin"
-            android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material">
+            android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material"
+            android:layout_gravity="fill_horizontal">
 
             <TextView
                 style="@style/text_secondary_title"
@@ -105,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:text="VOLUME"
                 android:id="@+id/volume_title"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 style="@style/BatchValues"
@@ -120,10 +115,10 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/volume_container"
             android:orientation="vertical"
             android:paddingTop="@dimen/abc_action_bar_icon_vertical_padding_material"
-            android:layout_marginLeft="@dimen/linear_layout_margin">
+            android:layout_marginLeft="@dimen/linear_layout_margin"
+            android:layout_gravity="fill_horizontal">
 
             <TextView
                 style="@style/text_secondary_title"
@@ -131,16 +126,16 @@
                 android:layout_height="wrap_content"
                 android:text="BEER TYPE"
                 android:id="@+id/beer_title"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center_horizontal"/>
 
             <TextView
                 style="@style/BatchValues"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="IPA"
+                android:text="   IPA   "
                 android:id="@+id/beer_type"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"/>
         </LinearLayout>
-    </RelativeLayout>
+      </GridLayout>
 </RelativeLayout>
