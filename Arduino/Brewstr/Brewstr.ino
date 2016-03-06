@@ -1,37 +1,46 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+
+//Code Rules:
+// For variables that aren't varied externally: m_variable_names
+// For variables that are varied externally: e_variable_names
+//For variables that are temporary: variable_names
+// For Constant Values: ALLCAPSNOUNDERSCORES
+// For Configuration Values: ALL_CAPS_WITH_UNDERSCORES
+
 // variables to store brew configuration/setpoints
-unsigned long mashing_temp_setpoint;
-unsigned long mashing_time_setpoint;
+unsigned long e_mashing_temp_setpoint;
+unsigned long e_mashing_time_setpoint;
 
 
-unsigned long boiler_temp_setpoint = 0;
-unsigned long boiler_temp_setpoint_in;
-unsigned long boiler_time_setpoint;
-unsigned long hops_time_setpoint;
-
-// variables to store sensor/system states
-float boiler_temp_feedback_1 = 0;
-float boiler_temp_feedback_1_memory; //stores previous boiler temp value
+unsigned long m_boiler_temp_setpoint = 0;
+unsigned long e_boiler_temp_setpoint;
+unsigned long e_boiler_time_setpoint;
+unsigned long e_hops_time_setpoint;
 
 // variables to store sensor/system states
-float boiler_temp_feedback_2 = 0;
-float boiler_temp_feedback_2_memory; //stores previous boiler temp value
+float m_boiler_temp_1 = 0;
+float m_boiler_temp_1_memory; //stores previous boiler temp value
 
-int boiler_temp_feedback_avg_memory;
-int boiler_temp_feedback_avg = 0;
+// variables to store sensor/system states
+float m_boiler_temp_2 = 0;
+float m_boiler_temp_2_memory; //stores previous boiler temp value
 
-int pwmpin =10; // LED connected to pin 48 (on-board LED)
-int temp_pin = 3; // Temperature sensor pin in interrupt enabled pin
+int m_boiler_temp_avg_memory;
+int m_boiler_temp_avg = 0;
 
-boolean start_cfg_recvd = 0;
+int PWM_PIN =10; // LED connected to pin 48 (on-board LED)
+int TEMP_PIN = 3; // Temperature sensor pin in interrupt enabled pin
+
+boolean m_start_cfg_recvd = false;
+ boolean m_reached_mash_temp = false;
 
 // Defining the scheduling interval for each function
-#define readMessageFromUL_Cycle 2500U
-#define readTemp_Cycle 100U
-#define controlTemp_Cycle 5000U
-#define taskCycle 5000U
+#define READ_MESSAGE_FROM_UL_CYCLE 2500U
+#define READ_TEMP_CYCLE 100U
+#define CONTROL_TEMP_CYCLE 5000U
+#define TASK_CYCLE 5000U
 
 // Define the temperature sensor data pin = 3
 #define ONE_WIRE_BUS 3
@@ -39,16 +48,16 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 // Define variables to store last run time (in ms) for each function (used by task scheduler).
-unsigned long readMessageFromUL_LastMillis = 0;
-unsigned long readTemp_LastMillis = 0;
-unsigned long controlTemp_LastMillis = 0;
-unsigned long taskLastMillis = 0;
+unsigned long m_read_message_from_ul_last_millis = 0;
+unsigned long m_read_temp_last_millis = 0;
+unsigned long m_control_temp_last_millis = 0;
+unsigned long m_task_last_millis = 0;
 
-unsigned long start_brew_cycle_time;
-unsigned long elapsed_brew_cycle_time;
-unsigned long long t;
+unsigned long m_start_brew_cycle_time;
+unsigned long m_elapsed_brew_cycle_time;
+unsigned long long m_time;
 
-String system_state = "Standby";
+String m_system_state = "Standby";
 
   void setup()
   {
@@ -66,21 +75,21 @@ String system_state = "Standby";
 //----------------------------------------------
 void loop() 
 {
-  if(taskScheduler(&readMessageFromUL_LastMillis, readMessageFromUL_Cycle))  // if readpacket is currently scheduled to be called
+  if(taskScheduler(&m_read_message_from_ul_last_millis, READ_MESSAGE_FROM_UL_CYCLE))  // if readpacket is currently scheduled to be called
   {
      //run task 1
     readMessageFromUL();
   }
-  if(taskScheduler(&readTemp_LastMillis, readTemp_Cycle) && start_cfg_recvd) // if readtemp is currently scheduled to be called
+  if(taskScheduler(&m_read_temp_last_millis, READ_TEMP_CYCLE) && m_start_cfg_recvd) // if readtemp is currently scheduled to be called
   {
       readTemp();
   }
-  if(taskScheduler(&controlTemp_LastMillis, controlTemp_Cycle) && start_cfg_recvd)    // task schedule template, add new tasks here and update names
+  if(taskScheduler(&m_control_temp_last_millis, CONTROL_TEMP_CYCLE) && m_start_cfg_recvd)    // task schedule template, add new tasks here and update names
   {
     //run task 
-    controlTemp();
+    controlTemp(controlSystemState());
   }
-  if(taskScheduler(&taskLastMillis, taskCycle))    // task schedule template, add new tasks here and update names
+  if(taskScheduler(&m_task_last_millis, TASK_CYCLE))    // task schedule template, add new tasks here and update names
   {
     //run task 
   }
@@ -113,12 +122,12 @@ void readMessageFromUL()
 void decodeMessage(String message)
 {
    //strings to store the incoming message information
-  String Mashtemp;
-  String Mashtime;
-  String Boiltemp;
-  String Boiltime;
-  String Hopstime;
-  String Messagetype;
+  String mash_temp;
+  String mash_time;
+  String boil_temp;
+  String boil_time;
+  String hops_time;
+  String message_type;
   
   // message structure looks like: "boiltemp,boiltime,hopstime"
   int count = 0;
@@ -131,22 +140,22 @@ void decodeMessage(String message)
                       switch(count)
                       {
                         case 0:
-                              Messagetype += message.charAt(i);
+                              message_type += message.charAt(i);
                               break;
                         case 1:
-                              Mashtemp += message.charAt(i);
+                              mash_temp += message.charAt(i);
                         break;
                         case 2:
-                              Mashtime += message.charAt(i);
+                              mash_time += message.charAt(i);
                         break;
                         case 3:
-                              Boiltemp += message.charAt(i);
+                              boil_temp += message.charAt(i);
                         break;
                         case 4:
-                              Boiltime += message.charAt(i);
+                              boil_time += message.charAt(i);
                               break;
                         case 5:
-                              Hopstime += message.charAt(i);
+                              hops_time += message.charAt(i);
                         default:
                         break;
                       }
@@ -157,17 +166,17 @@ void decodeMessage(String message)
               //read the values into integer storage for the control system.
               
               //convert all strings into integers
-              mashing_temp_setpoint = Mashtemp.toInt();
-              mashing_time_setpoint = Mashtime.toInt();
-              boiler_temp_setpoint_in = Boiltemp.toInt();
-              boiler_time_setpoint = Boiltime.toInt();
-              hops_time_setpoint = Hopstime.toInt(); 
+              e_mashing_temp_setpoint = mash_temp.toInt();
+              e_mashing_time_setpoint = mash_time.toInt();
+              e_boiler_temp_setpoint = boil_temp.toInt();
+              e_boiler_time_setpoint = boil_time.toInt();
+              e_hops_time_setpoint = hops_time.toInt(); 
 
-              if(!start_cfg_recvd)
+              if(!m_start_cfg_recvd)
               {
-                start_brew_cycle_time = millis();
+                m_start_brew_cycle_time = millis();
               }
-              start_cfg_recvd = true;
+              m_start_cfg_recvd = true;
               
               Serial.flush();
 }
@@ -186,21 +195,22 @@ void sendMessageToUL(String message)
 //---------------------------------------------------
 void readTemp()
 {
-   boiler_temp_feedback_1_memory = boiler_temp_feedback_1;
-   boiler_temp_feedback_2_memory = boiler_temp_feedback_2;
-   boiler_temp_feedback_avg_memory = boiler_temp_feedback_avg;
+   m_boiler_temp_1_memory = m_boiler_temp_1;
+   m_boiler_temp_2_memory = m_boiler_temp_2;
+   m_boiler_temp_avg_memory = m_boiler_temp_avg;
    sensors.requestTemperatures(); // Send the command to get temperatures
-   boiler_temp_feedback_1 = sensors.getTempCByIndex(0);
-   boiler_temp_feedback_2 = sensors.getTempCByIndex(1);
-   int boiler_temp_feedback_1_int = boiler_temp_feedback_1*100;
-   int boiler_temp_feedback_2_int = boiler_temp_feedback_2*100;
-   if(((boiler_temp_feedback_1 - boiler_temp_feedback_1_memory)!= 0)||((boiler_temp_feedback_2 - boiler_temp_feedback_2_memory)!= 0))
+   
+   m_boiler_temp_1 = sensors.getTempCByIndex(0);
+   m_boiler_temp_2 = sensors.getTempCByIndex(1);
+   int boiler_temp_1_int = m_boiler_temp_1*100;
+   int boiler_temp_2_int = m_boiler_temp_2*100;
+   if(((m_boiler_temp_1 - m_boiler_temp_1_memory)!= 0)||((m_boiler_temp_2 - m_boiler_temp_2_memory)!= 0))
    {  
-      boiler_temp_feedback_avg = ( boiler_temp_feedback_1_int + boiler_temp_feedback_2_int)/2;
+      m_boiler_temp_avg = ( boiler_temp_1_int + boiler_temp_2_int)/2;
       Serial.print("Temperature: ");
-      Serial.println(boiler_temp_feedback_avg);
+      Serial.println(m_boiler_temp_avg);
       Serial.print("Time: ");
-      Serial.println(millis() - start_brew_cycle_time);
+      Serial.println(millis() - m_start_brew_cycle_time);
       Serial.println("----------------------------------------"); 
 
    }
@@ -221,39 +231,55 @@ boolean taskScheduler(unsigned long *lastMillis, unsigned int cycle)
    return false;
 }
 
+unsigned long controlSystemState()
+{
+  unsigned long remaining_time;
+  m_elapsed_brew_cycle_time = millis();
+  m_time = m_elapsed_brew_cycle_time - m_start_brew_cycle_time;
+  if(!m_reached_mash_temp) 
+  {
+    m_boiler_temp_setpoint = e_mashing_temp_setpoint;
+    remaining_time = 0;
+    if(m_boiler_temp_avg/100 < (e_mashing_temp_setpoint - 2)){
+      m_system_state = "Pre-heating: ";
+      unsigned long percent_complete = 100*(m_boiler_temp_avg/(100*e_mashing_temp_setpoint));
+      m_system_state  += percent_complete;
+      m_system_state += "% complete.";
+    }
+    else{
+    m_start_brew_cycle_time = millis();
+    m_reached_mash_temp = true;
+    }
+  }
+  else if(m_time <= e_mashing_time_setpoint*1000)
+  {
+    m_system_state = "Mashing";
+    m_boiler_temp_setpoint = e_mashing_temp_setpoint;
+    remaining_time = e_mashing_time_setpoint - m_time/1000;
+  }
+  else if ((m_time > e_mashing_time_setpoint*1000) && (m_time < (e_mashing_time_setpoint*1000 + e_boiler_time_setpoint*1000)))
+  {
+    m_system_state = "Boiling";
+    m_boiler_temp_setpoint = e_boiler_temp_setpoint;
+    remaining_time = (e_boiler_time_setpoint + e_mashing_time_setpoint) - m_time/1000;
+  }
+  else {
+    m_system_state = "Finished";
+    m_boiler_temp_setpoint = 0;
+    remaining_time = 0;
+  }
+  return remaining_time;
+}
 //--------------------------------------------------
 // Function to compare setpoint and feedback of boiler.
 //--------------------------------------------------
-void controlTemp()
+void controlTemp(unsigned long remaining_time)
 {
-  unsigned long remaining_time;
-  elapsed_brew_cycle_time = millis();
-  t = elapsed_brew_cycle_time - start_brew_cycle_time;
-  if(t <= mashing_time_setpoint*60000)
-  {
-    system_state = "Mashing";
-    boiler_temp_setpoint = mashing_temp_setpoint;
-    remaining_time = mashing_time_setpoint*60 - t/1000;
-  }
-  else if ((t > mashing_time_setpoint*60000) && (t < (mashing_time_setpoint*60000 + boiler_time_setpoint*60000)))
-  {
-    system_state = "Boiling";
-    boiler_temp_setpoint = boiler_temp_setpoint_in;
-    remaining_time = boiler_time_setpoint*60 - t/1000;
-  }
-  else {
-    system_state = "Finished";
-    boiler_temp_setpoint = 0;
-    remaining_time = 0;
-  }
-  float boiler_temp_feedback_avg_flt = boiler_temp_feedback_avg;
-  float temp_difference= (boiler_temp_setpoint - boiler_temp_feedback_avg_flt/100);
-  Serial.println(boiler_temp_setpoint);
-  Serial.println(boiler_temp_feedback_avg);
-  Serial.println(temp_difference);
-  float output = temp_difference*75 + (boiler_temp_feedback_avg - boiler_temp_feedback_avg_memory)*1;
-  float boiler_temp_feedback_avg_float = boiler_temp_feedback_avg;
-  boiler_temp_feedback_avg_float = boiler_temp_feedback_avg_float/100;
+  float m_boiler_temp_avg_flt = m_boiler_temp_avg;
+  float temp_difference= (m_boiler_temp_setpoint - m_boiler_temp_avg_flt/100);
+  float output = temp_difference*75 + (m_boiler_temp_avg - m_boiler_temp_avg_memory)*1;
+  float boiler_temp_avg_float = m_boiler_temp_avg;
+  boiler_temp_avg_float = boiler_temp_avg_float/100;
   if( output > 100)
   {
     output = 100;
@@ -264,16 +290,16 @@ void controlTemp()
   }
 
   int pwm = output*2.55;
-  analogWrite(pwmpin,pwm);
+  analogWrite(PWM_PIN,pwm);
   Serial.print("System State: ");
-  Serial.println(system_state);
+  Serial.println(m_system_state);
   Serial.print("Time Remaining: ");
   Serial.print(remaining_time);
   Serial.println(" seconds");
   Serial.print("Boiler Temperature Setpoint: ");
-  Serial.println(boiler_temp_setpoint);
+  Serial.println(m_boiler_temp_setpoint);
   Serial.print("Boiler Temperature Feedback: ");
-  Serial.println(boiler_temp_feedback_avg);
+  Serial.println(boiler_temp_avg_float);
   Serial.print("Heater PWM Signal: ");
   Serial.print(pwm*100/255);
   Serial.println(" %");
