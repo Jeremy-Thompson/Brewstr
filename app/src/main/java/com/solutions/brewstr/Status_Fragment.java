@@ -41,15 +41,19 @@ public class Status_Fragment extends Fragment {
         cPB = (DonutProgressBar) rootview.findViewById(R.id.stage_time_remaining);
 
         Bundle bundle = this.getArguments();
-        mTimer = bundle.getInt("MashTime");
-        cPB.setMax(mTimer*60000);
-        mTemperaturesp = bundle.getInt("MashTemp");
-        mCurrentTemperatureSetpoint.setText(Integer.toString(mTemperaturesp) + " C");
+        if(bundle != null) {
+            mTimer = bundle.getInt("MashTime");
+            cPB.setMax(mTimer*60000);
+            mTemperaturesp = bundle.getInt("MashTemp");
+            mCurrentTemperatureSetpoint.setText(Integer.toString(mTemperaturesp) + " C");
+        }
 
         new CountDownTimer(mTimer*60000, 1000) {
             public void onTick(long millisUntilFinished) {
                 cPB.setProgress(Math.round(millisUntilFinished)/1000);
                 cPB.invalidate();
+                String temperatureFeedback = ((MainActivity) getActivity()).test;
+                mCurrentTemperatureFeedback.setText(temperatureFeedback);
             }
 
             public void onFinish() {
@@ -93,4 +97,9 @@ public class Status_Fragment extends Fragment {
             mBeerType.setText(str);
         }
     }
+    public void getStatusFrag()
+    {
+
+    }
+
 }

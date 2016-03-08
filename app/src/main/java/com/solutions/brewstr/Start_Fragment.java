@@ -44,21 +44,6 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
         bluetoothButton = (ImageButton) rootview.findViewById(R.id.bluetooth_button);
         bluetoothButton.setOnClickListener(this);
         status = (TextView) rootview.findViewById(R.id.startLabel);
-
-/*       displayDataLog = (Button) rootview.findViewById(R.id.display_logs);
-        displayDataLog.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!mTempVsTime.isEmpty()) {
-                        List<Float> tempSet = new ArrayList<Float>(mTempVsTime.values());
-                        List<Integer> timeLog = new ArrayList<Integer>(mTempVsTime.keySet());
-                        for (int i = 0; i < tempSet.size(); i++){
-                            System.out.printf("%.2f   %d%n", tempSet.get(i), timeLog.get(i));
-                                }
-                    }
-                }
-            });*/
-
         return rootview;
     }
 
@@ -132,11 +117,14 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
 
                                                     Log.i("DEBUG","Message Recieved: " + s + "\n\n");
 
-                                                    Status_Fragment frag = ((MainActivity) getActivity()).status_fragment;
-                                                    if(frag != null) {
-                                                        String str = Float.toString(currentTemperature);
-                                                        frag.setCurrentTemperatureFeedback(str);
-                                                    }
+                                                    MainActivity activity = (MainActivity) getActivity();
+                                                    String str = Float.toString(currentTemperature);
+                                                    activity.updateTemp(str);// = "derp";//str;
+                                                    //Status_Fragment frag = activity.status_frag;
+                                                    //if(frag != null) {
+                                                      //  String str = Float.toString(currentTemperature);
+                                                        //frag.setCurrentTemperatureFeedback(str);
+                                                    //}
 
                                                 }
 
@@ -144,7 +132,7 @@ public class Start_Fragment extends Fragment implements View.OnClickListener {
                                         {
                                             //do something
                                             if(ex.getMessage() != null) {
-                                                Log.i("DEBUG", ex.getMessage());
+                                                Log.i("Handle Message Error", ex.getMessage());
                                             }
                                             else {
                                                 // do fuck all

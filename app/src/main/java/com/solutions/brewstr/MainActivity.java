@@ -31,8 +31,9 @@ public class MainActivity extends ActionBarActivity
     public Start_Fragment start_frag = new Start_Fragment();
     Setup_Fragment setup_frag = new Setup_Fragment();
     ListOfBatchView monitor_frag = new ListOfBatchView();
-    Status_Fragment status_fragment = new Status_Fragment();
+    Status_Fragment status_frag;
     Bluetooth bluetooth;
+    public String test = "derp";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -57,6 +58,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        status_frag = new Status_Fragment();
     }
     public Bluetooth getBluetooth()
     {
@@ -75,6 +77,10 @@ public class MainActivity extends ActionBarActivity
         startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         Log.d("Debug", "Bluetooth enabled!...\n");
     }
+    public void updateTemp(String str)
+    {
+        test = str;
+    }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
@@ -92,6 +98,9 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 2:
                     objFragment = monitor_frag;
+                break;
+            case 3:
+                    objFragment = status_frag;
                 break;
             default:
                 PlaceholderFragment.newInstance(position + 1);
@@ -116,6 +125,9 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 3:
                 mTitle = getString(R.string.app_name);
+                break;
+            case 4:
+                mTitle = "Brewstr";
                 break;
         }
     }

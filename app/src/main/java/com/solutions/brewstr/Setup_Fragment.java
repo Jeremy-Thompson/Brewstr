@@ -63,7 +63,7 @@ public class Setup_Fragment extends Fragment  {
 
                                                    ((MainActivity) getActivity()).start_frag.sendMsgToBT(messageToLL);
 
-                                                    Status_Fragment frag  = (Status_Fragment) ((MainActivity) getActivity()).status_fragment;
+                                                    Status_Fragment frag  = (Status_Fragment) ((MainActivity) getActivity()).status_frag;
                                                     Bundle bundle = new Bundle();
                                                     bundle.putInt("MashTime", MASHTIMEOFFSET + mashTimeSB.getProgress());
                                                     bundle.putInt("MashTemp", MASHTEMPOFFSET + mashTempSB.getProgress());

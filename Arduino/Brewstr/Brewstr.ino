@@ -29,18 +29,20 @@ float m_boiler_temp_2_memory; //stores previous boiler temp value
 
 int m_boiler_temp_avg_memory;
 int m_boiler_temp_avg = 0;
+float m_boiler_temp_avg_flt;
 
 int PWM_PIN =10; // LED connected to pin 48 (on-board LED)
 int TEMP_PIN = 3; // Temperature sensor pin in interrupt enabled pin
+int m_pwm_output = 0;
 
 boolean m_start_cfg_recvd = false;
- boolean m_reached_mash_temp = false;
+boolean m_reached_mash_temp = false;
 
 // Defining the scheduling interval for each function
 #define READ_MESSAGE_FROM_UL_CYCLE 2500U
 #define READ_TEMP_CYCLE 100U
-#define CONTROL_TEMP_CYCLE 5000U
-#define TASK_CYCLE 5000U
+#define CONTROL_TEMP_CYCLE 500U
+#define CONTROL_SYSTEM_STATE_CYCLE 5000U
 
 // Define the temperature sensor data pin = 3
 #define ONE_WIRE_BUS 3
@@ -51,11 +53,13 @@ DallasTemperature sensors(&oneWire);
 unsigned long m_read_message_from_ul_last_millis = 0;
 unsigned long m_read_temp_last_millis = 0;
 unsigned long m_control_temp_last_millis = 0;
-unsigned long m_task_last_millis = 0;
+unsigned long m_control_system_state_last_millis = 0;
 
 unsigned long m_start_brew_cycle_time;
 unsigned long m_elapsed_brew_cycle_time;
 unsigned long long m_time;
+unsigned long m_time_remaining;
+
 
 String m_system_state = "Standby";
 
@@ -87,11 +91,11 @@ void loop()
   if(taskScheduler(&m_control_temp_last_millis, CONTROL_TEMP_CYCLE) && m_start_cfg_recvd)    // task schedule template, add new tasks here and update names
   {
     //run task 
-    controlTemp(controlSystemState());
+    controlTemp();
   }
-  if(taskScheduler(&m_task_last_millis, TASK_CYCLE))    // task schedule template, add new tasks here and update names
+  if(taskScheduler(&m_control_system_state_last_millis, CONTROL_SYSTEM_STATE_CYCLE))    // task schedule template, add new tasks here and update names
   {
-    //run task 
+    controlSystemState();
   }
 }
 
@@ -242,41 +246,53 @@ unsigned long controlSystemState()
     remaining_time = 0;
     if(m_boiler_temp_avg/100 < (e_mashing_temp_setpoint - 2)){
       m_system_state = "Pre-heating: ";
-      unsigned long percent_complete = 100*(m_boiler_temp_avg/(100*e_mashing_temp_setpoint));
-      m_system_state  += percent_complete;
-      m_system_state += "% complete.";
     }
     else{
     m_start_brew_cycle_time = millis();
     m_reached_mash_temp = true;
     }
   }
-  else if(m_time <= e_mashing_time_setpoint*1000)
+  else if(m_time <= e_mashing_time_setpoint*60000)
   {
     m_system_state = "Mashing";
     m_boiler_temp_setpoint = e_mashing_temp_setpoint;
-    remaining_time = e_mashing_time_setpoint - m_time/1000;
+    m_time_remaining = e_mashing_time_setpoint*60 - m_time/1000;
   }
-  else if ((m_time > e_mashing_time_setpoint*1000) && (m_time < (e_mashing_time_setpoint*1000 + e_boiler_time_setpoint*1000)))
+  else if ((m_time > e_mashing_time_setpoint*60000) && (m_time < (e_mashing_time_setpoint*60000 + e_boiler_time_setpoint*60000)))
   {
     m_system_state = "Boiling";
     m_boiler_temp_setpoint = e_boiler_temp_setpoint;
-    remaining_time = (e_boiler_time_setpoint + e_mashing_time_setpoint) - m_time/1000;
+    m_time_remaining = (e_boiler_time_setpoint + e_mashing_time_setpoint)*60 - m_time/1000;
   }
   else {
     m_system_state = "Finished";
     m_boiler_temp_setpoint = 0;
     remaining_time = 0;
   }
-  return remaining_time;
+  Serial.print("System State: ");
+  Serial.println(m_system_state);
+  Serial.print("Time Remaining: ");
+  Serial.print(m_time_remaining);
+  Serial.println(" seconds");
+  Serial.print("Boiler Temperature Setpoint: ");
+  Serial.println(m_boiler_temp_setpoint);
+  Serial.print("Boiler Temperature Feedback: ");
+  Serial.println(m_boiler_temp_avg_flt);
+  Serial.print("Heater PWM Signal: ");
+  Serial.print(m_pwm_output*100/255);
+  Serial.println(" %");
+  Serial.println();
+  Serial.println("----------------------------------------");
+  Serial.println();
 }
 //--------------------------------------------------
 // Function to compare setpoint and feedback of boiler.
 //--------------------------------------------------
-void controlTemp(unsigned long remaining_time)
+void controlTemp()
 {
-  float m_boiler_temp_avg_flt = m_boiler_temp_avg;
-  float temp_difference= (m_boiler_temp_setpoint - m_boiler_temp_avg_flt/100);
+  m_boiler_temp_avg_flt = m_boiler_temp_avg;
+  m_boiler_temp_avg_flt = m_boiler_temp_avg_flt/100;
+  float temp_difference= (m_boiler_temp_setpoint - m_boiler_temp_avg_flt);
   float output = temp_difference*75 + (m_boiler_temp_avg - m_boiler_temp_avg_memory)*1;
   float boiler_temp_avg_float = m_boiler_temp_avg;
   boiler_temp_avg_float = boiler_temp_avg_float/100;
@@ -289,23 +305,8 @@ void controlTemp(unsigned long remaining_time)
     output = 0;
   }
 
-  int pwm = output*2.55;
-  analogWrite(PWM_PIN,pwm);
-  Serial.print("System State: ");
-  Serial.println(m_system_state);
-  Serial.print("Time Remaining: ");
-  Serial.print(remaining_time);
-  Serial.println(" seconds");
-  Serial.print("Boiler Temperature Setpoint: ");
-  Serial.println(m_boiler_temp_setpoint);
-  Serial.print("Boiler Temperature Feedback: ");
-  Serial.println(boiler_temp_avg_float);
-  Serial.print("Heater PWM Signal: ");
-  Serial.print(pwm*100/255);
-  Serial.println(" %");
-  Serial.println();
-  Serial.println("----------------------------------------");
-  Serial.println();
+  m_pwm_output = output*2.55;
+  analogWrite(PWM_PIN,m_pwm_output);
 }
 //Function to abort the brew process. input parameter is the system state, i.e. what stage in the brewing process we are at.
 // the stage will determine the correct course of action for aborting the process
