@@ -38,6 +38,10 @@ int m_pwm_output = 0;
 boolean m_start_cfg_recvd = false;
 boolean m_reached_mash_temp = false;
 
+// Valve state constants
+int OPEN = 1;
+int CLOSE = 0;
+
 // Defining the scheduling interval for each function
 #define READ_MESSAGE_FROM_UL_CYCLE 2500U
 #define READ_TEMP_CYCLE 100U
@@ -308,6 +312,45 @@ void controlTemp()
   m_pwm_output = output*2.55;
   analogWrite(PWM_PIN,m_pwm_output);
 }
+
+void pumpPrime() 
+{
+  prepFermenter();
+  releaseAir();
+}
+
+void prepFermenter () 
+{
+  valveAction("level", OPEN);  
+  valveAction("drain",OPEN);
+  While(m_FermenterMass < m_fermenterZeroMass);
+  valveAction("level",CLOSE);
+  valveAction("drain", CLOSE);
+}
+
+void releaseAir() 
+{
+  valveAction("bleedoff", OPEN)
+  //run pump for 5 seconds to bleed air off
+  valveAction("bleedoff", CLOSE);
+}
+
+void valveaction(String valve, int valve_state) 
+{
+  if(valve == "bleedoff") 
+  {
+    digitalWrite(valve_state, PIN1); 
+  } 
+  else if(valve = "drain")
+  {
+    digitalWrite(valve_state, PIN2)
+  } 
+  else
+  {
+    digitalWrite(valve_state, PIN3);
+  }
+}
+
 //Function to abort the brew process. input parameter is the system state, i.e. what stage in the brewing process we are at.
 // the stage will determine the correct course of action for aborting the process
 void abortProcess(int system_state)
