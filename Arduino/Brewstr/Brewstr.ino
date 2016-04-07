@@ -30,19 +30,33 @@ float m_boiler_temp_2_memory; //stores previous boiler temp value
 int m_boiler_temp_avg_memory;
 int m_boiler_temp_avg = 0;
 float m_boiler_temp_avg_flt;
+float m_fermenterMass;
+float m_fermenterZeroMass;
 
 int PWM_PIN =10; // LED connected to pin 48 (on-board LED)
 int TEMP_PIN = 3; // Temperature sensor pin in interrupt enabled pin
+int PUMP_PIN = 11;
 int m_pwm_output = 0;
 
 boolean m_start_cfg_recvd = false;
 boolean m_reached_mash_temp = false;
+
+// Valve state constants
+int OPEN = 1;
+int CLOSE = 0;
+
+boolean m_pump_pwr = false;
+boolean m_overflow_valve = false;
+boolean m_pump_bleed_off_valve = false;
 
 // Defining the scheduling interval for each function
 #define READ_MESSAGE_FROM_UL_CYCLE 2500U
 #define READ_TEMP_CYCLE 100U
 #define CONTROL_TEMP_CYCLE 500U
 #define CONTROL_SYSTEM_STATE_CYCLE 5000U
+#define CONTROL_PUMP_CYCLE 5000U
+#define MASH_OUT_OFFSET 45000U
+#define PUMP_PRIME_OFFSET 45000U
 
 // Define the temperature sensor data pin = 3
 #define ONE_WIRE_BUS 3
@@ -54,6 +68,7 @@ unsigned long m_read_message_from_ul_last_millis = 0;
 unsigned long m_read_temp_last_millis = 0;
 unsigned long m_control_temp_last_millis = 0;
 unsigned long m_control_system_state_last_millis = 0;
+unsigned long m_control_pump_last_millis = 0;
 
 unsigned long m_start_brew_cycle_time;
 unsigned long m_elapsed_brew_cycle_time;
@@ -96,6 +111,10 @@ void loop()
   if(taskScheduler(&m_control_system_state_last_millis, CONTROL_SYSTEM_STATE_CYCLE))    // task schedule template, add new tasks here and update names
   {
     controlSystemState();
+  }
+  if(taskScheduler(&m_control_pump_last_millis, CONTROL_PUMP_CYCLE))
+  {
+    controlPump();
   }
 }
 
@@ -260,9 +279,23 @@ unsigned long controlSystemState()
   }
   else if ((m_time > e_mashing_time_setpoint*60000) && (m_time < (e_mashing_time_setpoint*60000 + e_boiler_time_setpoint*60000)))
   {
-    m_system_state = "Boiling";
-    m_boiler_temp_setpoint = e_boiler_temp_setpoint;
-    m_time_remaining = (e_boiler_time_setpoint + e_mashing_time_setpoint)*60 - m_time/1000;
+    if(m_time < (e_mashing_time_setpoint*60000 + MASH_OUT_OFFSET))
+    {
+      m_system_state = "Mash Out";
+      m_boiler_temp_setpoint = e_boiler_temp_setpoint;
+      m_time_remaining = (e_mashing_time_setpoint*60 - MASH_OUT_OFFSET/1000) - m_time/1000;
+      m_overflow_valve = true;
+    }
+    else{
+      if(m_system_state == "Mash Out")
+      {
+        primePump();
+      }
+      m_system_state = "Boiling";
+      m_boiler_temp_setpoint = e_boiler_temp_setpoint;
+      m_time_remaining = (e_boiler_time_setpoint + e_mashing_time_setpoint)*60 - m_time/1000;
+      m_pump_pwr = true;
+    }
   }
   else {
     m_system_state = "Finished";
@@ -308,10 +341,69 @@ void controlTemp()
   m_pwm_output = output*2.55;
   analogWrite(PWM_PIN,m_pwm_output);
 }
+
+void pumpPrime() 
+{
+  prepFermenter();
+  releaseAir();
+}
+
+void prepFermenter () 
+{
+  valveAction("level", OPEN);  
+  valveAction("drain",OPEN);
+  while(m_fermenterMass < m_fermenterZeroMass);
+  valveAction("level",CLOSE);
+  valveAction("drain", CLOSE);
+}
+
+void releaseAir() 
+{
+  valveAction("bleedoff", OPEN);
+  //run pump for 5 seconds to bleed air off
+  valveAction("bleedoff", CLOSE);
+}
+
+void valveAction(String valve, int valve_state) 
+{
+  if(valve == "bleedoff") 
+  {
+    digitalWrite(valve_state, PIN1); 
+  } 
+  else if(valve = "drain")
+  {
+    digitalWrite(valve_state, PIN2);
+  } 
+  else
+  {
+    digitalWrite(valve_state, PIN3);
+  }
+}
+
 //Function to abort the brew process. input parameter is the system state, i.e. what stage in the brewing process we are at.
 // the stage will determine the correct course of action for aborting the process
 void abortProcess(int system_state)
 {
   //implement abort process
+}
+// Function to control power to the 12vDC wort pump
+void controlPump()
+{
+  if(m_pump_pwr)
+  {
+    digitalWrite(PUMP_PIN,HIGH);
+  }
+}
+void primePump()
+{
+  //prime the pump by running for 45 seconds with bleed off valve.
+  unsigned long pump_prime_start_time = millis();
+  m_pump_bleed_off_valve = true;
+  m_pump_pwr = true;
+  while(millis() <= (pump_prime_start_time + PUMP_PRIME_OFFSET))
+  {
+    // wait
+  }
+  m_pump_bleed_off_valve = false;
 }
 
