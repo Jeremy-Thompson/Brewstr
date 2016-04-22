@@ -33,16 +33,21 @@ float m_boiler_temp_avg_flt;
 float m_fermenterMass;
 float m_fermenterZeroMass;
 
-int PWM_PIN =10; // LED connected to pin 48 (on-board LED)
 int TEMP_PIN = 3; // Temperature sensor pin in interrupt enabled pin
-int PUMP_PIN = 11;
+int HEATER_PIN =10; // SSR Relay switching pin for heater power 
+int PUMP_PIN = 5;
+int DRAIN_VALVE_PIN = 6; //DRAIN VALVE PIN
+int LEVEL_VALVE_PIN = 7; //LEVEL VALVE PIN
+int BLEEDOFF_VALVE_PIN = 8;
 int m_pwm_output = 0;
 
 boolean m_start_cfg_recvd = false;
 boolean m_reached_mash_temp = false;
+boolean m_drain_valve = false;
+boolean m_level_valve = false;
 
 // Valve state constants
-int OPEN = 1;
+int OPEN = 255;
 int CLOSE = 0;
 
 boolean m_pump_pwr = false;
@@ -86,7 +91,7 @@ String m_system_state = "Standby";
   TCCR1B = (TCCR1B & 0b11111000) | 0x05;
 
   //testing setup
-  pinMode(10, OUTPUT);
+  pinMode(HEATER_PIN, OUTPUT);
 }
 
 //----------------------------------------------
@@ -96,16 +101,16 @@ void loop()
 {
   if(taskScheduler(&m_read_message_from_ul_last_millis, READ_MESSAGE_FROM_UL_CYCLE))  // if readpacket is currently scheduled to be called
   {
-     //run task 1
+    //run task 1
     readMessageFromUL();
   }
   if(taskScheduler(&m_read_temp_last_millis, READ_TEMP_CYCLE) && m_start_cfg_recvd) // if readtemp is currently scheduled to be called
   {
-      readTemp();
+    readTemp();
   }
   if(taskScheduler(&m_control_temp_last_millis, CONTROL_TEMP_CYCLE) && m_start_cfg_recvd)    // task schedule template, add new tasks here and update names
   {
-    //run task 
+    //run task  
     controlTemp();
   }
   if(taskScheduler(&m_control_system_state_last_millis, CONTROL_SYSTEM_STATE_CYCLE))    // task schedule template, add new tasks here and update names
@@ -114,7 +119,7 @@ void loop()
   }
   if(taskScheduler(&m_control_pump_last_millis, CONTROL_PUMP_CYCLE))
   {
-    controlPump();
+    controlPump();  
   }
 }
 
@@ -284,9 +289,10 @@ unsigned long controlSystemState()
       m_system_state = "Mash Out";
       m_boiler_temp_setpoint = e_boiler_temp_setpoint;
       m_time_remaining = (e_mashing_time_setpoint*60 - MASH_OUT_OFFSET/1000) - m_time/1000;
-      m_overflow_valve = true;
     }
     else{
+      m_drain_valve = true;
+      m_level_valve = true;
       if(m_system_state == "Mash Out")
       {
         primePump();
@@ -298,6 +304,7 @@ unsigned long controlSystemState()
     }
   }
   else {
+    m_level_valve = false;
     m_system_state = "Finished";
     m_boiler_temp_setpoint = 0;
     remaining_time = 0;
@@ -339,7 +346,7 @@ void controlTemp()
   }
 
   m_pwm_output = output*2.55;
-  analogWrite(PWM_PIN,m_pwm_output);
+  analogWrite(HEATER_PIN,m_pwm_output);
 }
 
 void pumpPrime() 
@@ -368,15 +375,14 @@ void valveAction(String valve, int valve_state)
 {
   if(valve == "bleedoff") 
   {
-    digitalWrite(valve_state, PIN1); 
+    analogWrite(BLEEDOFF_VALVE_PIN, valve_state); 
   } 
   else if(valve = "drain")
   {
-    digitalWrite(valve_state, PIN2);
-  } 
-  else
-  {
-    digitalWrite(valve_state, PIN3);
+    analogWrite(DRAIN_VALVE_PIN, valve_state);
+  }
+  else{ //valve = "level"
+    analogWrite(LEVEL_VALVE_PIN, valve_state);
   }
 }
 
@@ -391,7 +397,7 @@ void controlPump()
 {
   if(m_pump_pwr)
   {
-    digitalWrite(PUMP_PIN,HIGH);
+    analogWrite(PUMP_PIN,OPEN);
   }
 }
 void primePump()
@@ -406,4 +412,24 @@ void primePump()
   }
   m_pump_bleed_off_valve = false;
 }
+void controlValveState()
+{
+  if(m_drain_valve)
+  {
+    valveAction("drain",OPEN);
+  }else
+  {
+    valveAction("drain",CLOSE);
+  }
+  if(m_level_valve)
+  {
+    valveAction("level",OPEN);
+  }else
+  {
+    valveAction("level",CLOSE);
+  }    
+}
+
+
+
 
